@@ -56,8 +56,11 @@ default), then:
 ```bash
 pkexec apt update
 pkexec apt install firmware-amd-graphics
-pkexec usermod -aG video,render "$USER"   # then log out and back in
+pkexec /usr/sbin/usermod -aG video,render "$USER"   # then log out and back in
 ```
+
+Until you re-login, current shells pick up the new group with
+`sg render -c '<command>'` (or `sg video -c '...'`).
 
 Verify after re-login:
 
@@ -77,7 +80,7 @@ time):
 
 ```bash
 pkexec mkdir --parents --mode=0755 /etc/apt/keyrings
-wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | gpg --dearmor | pkexec tee /etc/apt/keyrings/rocm.gpg > /dev/null
+curl -fsSL https://repo.radeon.com/rocm/rocm.gpg.key | gpg --dearmor | pkexec tee /etc/apt/keyrings/rocm.gpg > /dev/null
 pkexec tee /etc/apt/sources.list.d/rocm.list << 'EOF'
 deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/7.2.4 noble main
 EOF
@@ -90,12 +93,17 @@ pkexec apt update
 pkexec apt install rocm
 ```
 
-Check the version string the way the installer does, and see the detected GPU:
+Check the version string the way the installer does, and see the detected GPU
+(run via `sg render -c '...'` if you have not re-logged since adding the group):
 
 ```bash
 cat /opt/rocm/.info/version                       # must start with 7.
-/opt/rocm/bin/rocminfo | grep -oE '\bgfx[0-9a-f]+\b' | sort -u
+sg render -c '/opt/rocm/bin/rocminfo | grep -oE "\bgfx[0-9a-f]+\b" | sort -u'
 ```
+
+Verified on trixie: the `noble` suite installed cleanly — 260 packages from
+`repo.radeon.com/rocm/apt/7.2.4`, no conflicts, `/opt/rocm/.info/version` = 7.2.4,
+`rocminfo` reports gfx1101 on an RX 7800 XT.
 
 Only the ROCm compute repo is added above; the separate `graphics/7.2.4/ubuntu` repo
 in AMD's docs is for the graphics stack and is not needed for Avalon.
@@ -130,6 +138,22 @@ relocate, `JOBS` for build parallelism, `FORCE=1` to continue past a failed chec
 avalon-server        # OpenAI-compatible API on http://127.0.0.1:8080
 curl http://127.0.0.1:8080/v1/models
 ```
+
+On a 16 GB card (RX 7800 XT) use a smaller context — verified working:
+
+```bash
+sg render -c 'avalon-server -c 65536'   # if not re-logged into the render group
+curl -fsS http://127.0.0.1:8080/v1/models
+curl -fsS -X POST http://127.0.0.1:8080/v1/chat/completions \
+  -H 'Content-Type: application/json' \
+  -d '{"model":"Qwen3.8-Flash-Next-Avalon-IQ3KS-00001-of-00033.gguf","messages":[{"role":"user","content":"Reply with exactly: pong"}],"max_tokens":64}'
+```
+
+Verified output on an RX 7800 XT (gfx1101, 16 GB VRAM) with `-c 65536`: the model
+(88.3 GiB) loads, the server listens on `http://127.0.0.1:8080`, and the request
+above returns `"content": "pong"` at ~31 tokens/s with MTP draft acceptance 0.85
+(17 of 20 drafted tokens accepted). The installer warns `gfx1101: should work, not
+measured` — it does work.
 
 Extra arguments are forwarded to `llama-server` (e.g. `avalon-server -c 65536`);
 `HOST` and `PORT` override the bind address. The launcher runs the tuned command:
@@ -175,7 +199,15 @@ cd Qwen3.8-Flash-Next-Avalon-GGUF
   because of glibc forward compatibility; install the full `rocm` meta package so the
   coherent set resolves together, then `pkexec apt install -f`. If apt still refuses,
   use Ubuntu 24.04 (officially supported for Radeon) instead of Debian.
-- `python3 -m venv failed` — `pkexec apt install python3-venv`.
+- `python3 -m venv failed` — `pkexec apt install python3-venv` (on trixie this pulls
+  `python3.13-venv`).
+- `model (88.3 GiB) is larger than RAM (30.5 GiB): prompt cache disabled` — expected
+  on 32 GB RAM; the model is memory-mapped, so this warning is benign. Add
+  `--cache-ram N` to `avalon-server` if you want a prompt cache in RAM.
+- Model download is slow (~4–15 MB/s; Hugging Face caps per-IP bandwidth) — the
+  `hf download` run fetched all 37 files (~89 GiB) in about 2.5 h. It is resumable:
+  rerun the installer and completed files are skipped. For other large downloads,
+  see the `computer/debian/aria2c` note for segmented parallel downloads.
 - Less than 20 GB VRAM: the 256k context with MTP may not fit — start with
   `avalon-server -c 65536`.
 - Less than 14 GiB RAM or less than 98 GiB free: the installer refuses. Point
