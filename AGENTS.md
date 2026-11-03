@@ -42,6 +42,11 @@ docs(kb): add debian brave install notes
 docs(kb): restructure linux folder to point to distro-specific steps
 ```
 
+## Branch convention
+
+Always create feature branches from `main`. Name branches with prefix:
+`feature/`, `fix/`, `docs/`, `refactor/`. Never push to `main` directly.
+
 ## Agent behavior
 
 - Like-named topics go in the existing folder; only create a new folder
