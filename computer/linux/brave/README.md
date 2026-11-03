@@ -25,17 +25,9 @@ pkexec apt update
 pkexec apt install -y brave-browser
 ```
 
-### 1.4 Verify
+## 2. Distro specific
 
-```bash
-brave-browser --version
-```
-
-Debian 13: Brave Browser 156.1.98.63 or newer.
-
-### 1.5 Tested on this system
-
-Debian trixie, actual commands run:
+### 2.1 Debian
 
 ```bash
 # Add keyring
@@ -52,9 +44,8 @@ pkexec apt install -y brave-browser
 brave-browser --version   # Brave Browser 156.1.98.63
 ```
 
-## 2. Arch Linux
 
-### 2.1 Install from AUR
+### 2.2 Arch Linux - Install from AUR
 
 Brave is in AUR as `brave-bin`. Use your preferred AUR helper:
 
