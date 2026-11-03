@@ -33,6 +33,15 @@ Every `README.md` follows this shape:
 - Link the source article at the bottom under `## Source` when the note
   is adapted from somewhere.
 
+## Commit convention
+
+Use Conventional Commits. For knowledge base changes, use `docs(kb)` scope:
+
+```
+docs(kb): add debian brave install notes
+docs(kb): restructure linux folder to point to distro-specific steps
+```
+
 ## Agent behavior
 
 - Like-named topics go in the existing folder; only create a new folder
