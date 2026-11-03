@@ -27,6 +27,9 @@ Every `README.md` follows this shape:
 - Commands verbatim. Copy-paste must work as shown.
 - Call out distro differences explicitly ("Debian 13", "Ubuntu 24.04").
 - Flag destructive or root steps in prose before the command.
+- In `computer/debian/...` notes, prefer `pkexec apt ...` over `sudo apt ...`
+  when passwordless sudo is unavailable (`sudo` prompts for a password in a
+  non-interactive shell; `pkexec` authenticates via polkit).
 - Link the source article at the bottom under `## Source` when the note
   is adapted from somewhere.
 

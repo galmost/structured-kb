@@ -7,8 +7,9 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "disable_ai": false,
   "title_bar": {
-    "show_branch_icon": true
+    "show_branch_status_icon": true
   },
   "ui_font_family": ".SystemUIFont",
   "buffer_line_height": "standard",
@@ -200,13 +201,13 @@
     "metrics": false,
   },
   "project_panel": {
+    "folder_indicator": "chevron",
     "git_status_indicator": true,
     "scrollbar": {
       "show": "auto"
     },
     "bold_folder_labels": false,
     "indent_size": 10.0,
-    "folder_icons": false,
     "file_icons": true,
     "entry_spacing": "standard",
     "default_width": 241.0,
