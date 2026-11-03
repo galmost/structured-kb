@@ -76,6 +76,10 @@ title = "mistral-medium-3.5"
   `strict_config = true`.
 - Wrong model answers — `name` does not match `/v1/models` output; fix the string.
 - Restore hosted-only setup: `cp ~/.vibe/config.toml.bak ~/.vibe/config.toml`.
+- `Error: Jinja Exception: Unexpected reasoning effort high. Supported types are xhigh (default), medium, and low.`
+  — the model entry has `thinking = "high"` (Vibe persists a thinking level when you
+  switch models in-session). The Avalon chat template only accepts `xhigh`, `medium`,
+  `low`. Remove `thinking` from the `[[models]]` entry, or set it to one of those.
 
 ## Source
 
