@@ -98,6 +98,106 @@ server listens on `http://127.0.0.1:8080`, the request above returns `"content":
 at ~31 tokens/s, MTP draft acceptance 0.85 (17/20). The installer prints
 `gfx1101: should work, not measured` — it works.
 
+## 5. Add the Qwen2.5-Coder-7B variant (port 8081)
+
+Second, smaller model: [Qwen2.5-Coder-7B-Instruct](https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct-GGUF)
+q4_k_m GGUF, 2 shards, ~4.7 GiB. Served on `http://127.0.0.1:8081` as Vibe provider
+`qwen-coder` (alias `qwen2.5-coder`). RAM fits only one server at a time, so the two
+systemd user units conflict: starting one stops the other.
+
+### 5.1 Download (resumable, SHA-256-verified)
+
+```bash
+mkdir -p ~/Avalon-models/Qwen2.5-Coder-7B-Instruct-GGUF
+cat > /tmp/avalon-dl.txt << 'EOF'
+https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct-GGUF/resolve/main/qwen2.5-coder-7b-instruct-q4_k_m-00001-of-00002.gguf
+  out=qwen2.5-coder-7b-instruct-q4_k_m-00001-of-00002.gguf
+  checksum=sha-256=89f120544682078148c5a86117de9af3a65c339111262f2d3ff01d80d48b14be
+https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct-GGUF/resolve/main/qwen2.5-coder-7b-instruct-q4_k_m-00002-of-00002.gguf
+  out=qwen2.5-coder-7b-instruct-q4_k_m-00002-of-00002.gguf
+  checksum=sha-256=0183b3c850cfa96c31082c3af0123115300d3f62798c4448fa8f57bd0eac05e0
+EOF
+aria2c -c -x 16 -s 16 -k 1M --max-tries=0 --retry-wait=10 \
+  -i /tmp/avalon-dl.txt -d ~/Avalon-models/Qwen2.5-Coder-7B-Instruct-GGUF \
+  --log=/tmp/aria2-dl.log --log-level=info
+```
+
+`checksum=` lines make aria2 verify SHA-256 on completion and fail the file on
+mismatch; `-c` resumes partial files via their `.aria2` control files. Expected sizes:
+3993201376 and 689872288 bytes. Verify:
+
+```bash
+cd ~/Avalon-models/Qwen2.5-Coder-7B-Instruct-GGUF && sha256sum *.gguf
+# 89f120544682078148c5a86117de9af3a65c339111262f2d3ff01d80d48b14be  qwen2.5-coder-7b-instruct-q4_k_m-00001-of-00002.gguf
+# 0183b3c850cfa96c31082c3af0123115300d3f62798c4448fa8f57bd0eac05e0  qwen2.5-coder-7b-instruct-q4_k_m-00002-of-00002.gguf
+ls   # no *.aria2 files remain once complete
+```
+
+### 5.2 Launcher
+
+`~/.local/bin/qwen-coder-server` (chmod +x), mirrors `avalon-server`:
+
+```bash
+#!/usr/bin/env bash
+# Qwen2.5-Coder-7B-Instruct (q4_k_m GGUF), OpenAI-compatible API on http://${HOST:-127.0.0.1}:${PORT:-8081}
+# Extra arguments go to llama-server (e.g. -c 8192 for a smaller context).
+cd "/home/galmost/Avalon-models/Qwen2.5-Coder-7B-Instruct-GGUF"
+exec "/home/galmost/Avalon/build/bin/llama-server" -m qwen2.5-coder-7b-instruct-q4_k_m-00001-of-00002.gguf \
+  -c "${CTX:-32768}" -b 4096 -ub 4096 -fa on --jinja --parallel 1 -ngl auto \
+  --host "${HOST:-127.0.0.1}" --port "${PORT:-8081}" "$@"
+```
+
+### 5.3 Vibe config (`~/.vibe/config.toml`)
+
+```toml
+providers = [
+    { name = "avalon", api_base = "http://127.0.0.1:8080/v1", api_key_env_var = "" },
+    { name = "qwen-coder", api_base = "http://127.0.0.1:8081/v1", api_key_env_var = "" },
+]
+
+[[models]]
+name = "qwen2.5-coder-7b-instruct-q4_k_m-00001-of-00002.gguf"
+provider = "qwen-coder"
+alias = "qwen2.5-coder"
+thinking = "low"
+```
+
+### 5.4 systemd user services (start/stop individually)
+
+`~/.config/systemd/user/qwen-coder.service`:
+
+```ini
+[Unit]
+Description=Qwen2.5-Coder-7B llama-server (port 8081)
+After=network.target
+Conflicts=avalon.service
+
+[Service]
+Type=simple
+ExecStart=/home/galmost/.local/bin/qwen-coder-server
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target
+```
+
+Add `Conflicts=qwen-coder.service` to the `[Unit]` of `~/.config/systemd/user/avalon.service`.
+`qwen-coder.service` stays disabled (avalon is the boot default); RAM fits only one, and
+`Conflicts` makes `start` of one stop the other:
+
+```bash
+systemctl --user daemon-reload
+systemctl --user start qwen-coder.service   # stops avalon, serves :8081
+systemctl --user start avalon.service       # stops qwen-coder, back to :8080
+systemctl --user stop qwen-coder.service
+systemctl --user status avalon.service qwen-coder.service
+journalctl --user -u qwen-coder.service -f
+```
+
+Then select the model in Vibe: `vibe --model qwen2.5-coder`. Smoke test:
+`curl -fsS http://127.0.0.1:8081/v1/models`.
+
 ## Troubleshooting
 
 - `ROCm 5.7.1 found; Avalon is tested with ROCm 7.2.4 only` — you have Debian's ROCm.
@@ -118,6 +218,16 @@ at ~31 tokens/s, MTP draft acceptance 0.85 (17/20). The installer prints
 - Slow model download (~4–15 MB/s, Hugging Face caps per-IP bandwidth; full run took
   ~2.5 h) — rerun the installer to resume. See `computer/debian/aria2c` for segmented
   parallel downloads of other large files.
+- Qwen shard partial / `*.aria2` file remains — rerun the `aria2c -c -i /tmp/avalon-dl.txt ...`
+  command from 5.1; it resumes from the control file. SHA-256 mismatch after completion —
+  delete the file and its `.aria2`, rerun; do not rename a failed file into place.
+- `Conflicts` did not stop the other server / port busy — check `ss -tlnp | grep -E ':8080|:8081'`;
+  if a server was started manually (not via systemd) stop it by PID first.
+- Vibe session restore fails with `tagged-union[RustAcceptedApplyResult,RustRejectedApplyResult]`
+  and `runtime_builtin.arguments ... Input should be an object [type=dict_type, input_type=str]` —
+  a recorded tool call with `arguments` as a bare string (e.g. `'aria2c -i /tmp/avalon-dl... ... 2>&1'`)
+  poisons that session's replay in `~/.vibe/logs/vibe.log`. That session cannot be resumed;
+  start a fresh session and rerun the command with proper object arguments.
 
 ## Source
 
@@ -127,3 +237,4 @@ at ~31 tokens/s, MTP draft acceptance 0.85 (17/20). The installer prints
 - [ROCm system requirements — Debian 13 Instinct only; Radeon on Ubuntu/RHEL (AMD docs)](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html)
 - [repo.radeon.com/rocm/apt/7.2.4/dists — only jammy and noble suites](https://repo.radeon.com/rocm/apt/7.2.4/dists/)
 - [Debian Wiki — AtiHowTo](https://wiki.debian.org/AtiHowTo)
+- [Model: Qwen/Qwen2.5-Coder-7B-Instruct-GGUF (Hugging Face)](https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct-GGUF)
