@@ -6,36 +6,29 @@
 computer/<distro|domain>/<topic>/README.md
 ```
 
-One topic per folder, one `README.md` per topic. Notes apply to the distro
-named on their path (`computer/arch/...`, `computer/debian/...`); say
-explicitly which releases a note covers.
+One topic per folder. One `README.md` per topic. Notes match distro in path (`computer/arch/...`, `computer/debian/...`). State releases covered.
 
 ## Note format
 
-Every `README.md` follows this shape:
+`README.md` shape:
 
-1. `# <Topic> Setup (<distro> <version>)` — title names the topic and target.
-2. Short intro: what this does and when you need it.
-3. Numbered sections for steps: `## 1. Prerequisites`, then install,
-   configuration, verification.
-4. Exact commands in fenced `bash` blocks. Never paraphrase a command.
-5. `## Troubleshooting` at the end: one subsection per known failure,
-   with the shortest decisive fix.
+1. `# <Topic> Setup (<distro> <version>)` — title name topic and target.
+2. Short intro: what does, when need.
+3. Numbered sections for steps: `## 1. Prerequisites`, then install, config, verify.
+4. Exact commands in fenced `bash` blocks. Never paraphrase command.
+5. `## Troubleshooting` at end: one subsection per known failure, shortest decisive fix.
 
 ## Style rules
 
-- Commands verbatim. Copy-paste must work as shown.
-- Call out distro differences explicitly ("Debian 13", "Ubuntu 24.04").
-- Flag destructive or root steps in prose before the command.
-- In `computer/debian/...` notes, prefer `pkexec apt ...` over `sudo apt ...`
-  when passwordless sudo is unavailable (`sudo` prompts for a password in a
-  non-interactive shell; `pkexec` authenticates via polkit).
-- Link the source article at the bottom under `## Source` when the note
-  is adapted from somewhere.
+- Commands verbatim. Copy-paste work as shown.
+- Call out distro differences explicit ("Debian 13", "Ubuntu 24.04").
+- Flag destructive or root steps in prose before command.
+- In `computer/debian/...` notes, prefer `pkexec apt ...` over `sudo apt ...` when passwordless sudo unavailable (`sudo` prompt password in non-interactive shell; `pkexec` auth via polkit).
+- Link source article at bottom under `## Source` when note adapted from somewhere.
 
 ## Commit convention
 
-Use Conventional Commits. For knowledge base changes, use `docs(kb)` scope:
+Conventional Commits. KB changes use `docs(kb)` scope:
 
 ```
 docs(kb): add debian brave install notes
@@ -44,28 +37,18 @@ docs(kb): restructure linux folder to point to distro-specific steps
 
 ## Branch convention
 
-Always create feature branches from `main`. Name branches with prefix:
-`feature/`, `fix/`, `docs/`, `refactor/`. Never push to `main` directly.
-Always create or update the remote PR for a pushed branch (`gh pr create`,
-`gh pr edit` on updates) — a pushed branch without a PR is incomplete.
+Always create feature branch from `main`. Prefix: `feature/`, `fix/`, `docs/`, `refactor/`. Never push `main` direct. Always create or update remote PR for pushed branch (`gh pr create`, `gh pr edit` on updates) — pushed branch without PR incomplete.
 
 ## Worktree convention
 
-Always work in a separate git worktree, never in the main checkout. One
-worktree per branch, under `$VIBE_HOME/worktrees/` (default
-`~/.vibe/worktrees/`), in a per-repo bucket
-`<repo>-<sha256(common_git_dir)[:12]>/<name>/`.
+Always work in separate git worktree, never main checkout. One worktree per branch, under `$VIBE_HOME/worktrees/` (default `~/.vibe/worktrees/`), per-repo bucket `<repo>-<sha256(common_git_dir)[:12]>/<name>/`.
 
-- Create: `git worktree add -b <branch> <path> origin/main` — fetch first;
-  new branches start from the remote default branch, not the current HEAD.
-- Reuse a worktree only when the branch matches and the path is valid (no
-  symlinks, `.git` is a file, same common git dir).
-- Clean up via the vibe worktree tooling, never `rm -rf`: dirty worktrees are
-  snapshotted to `refs/vibe/reaped/<name>` before removal; confirm before
-  deleting a branch that pre-existed the session.
+- Create: `git worktree add -b <branch> <path> origin/main` — fetch first; new branch start from remote default, not current HEAD.
+- Reuse worktree only when branch match and path valid (no symlinks, `.git` is file, same common git dir).
+- Clean up via vibe worktree tooling, never `rm -rf`: dirty worktree snapshot to `refs/vibe/reaped/<name>` before removal; confirm before delete branch that pre-existed session.
 
 ## Agent behavior
 
-- Like-named topics go in the existing folder; only create a new folder
-  when no topic folder matches.
-- Never delete an existing command or comment you were not asked to change.
+- Like-named topic go in existing folder; only create new folder when no topic folder match.
+- Never delete existing command or comment you not ask to change.
+- Any `AGENTS.md` change must be followed by `/caveman-compress AGENTS.md` before commit.
