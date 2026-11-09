@@ -47,6 +47,21 @@ docs(kb): restructure linux folder to point to distro-specific steps
 Always create feature branches from `main`. Name branches with prefix:
 `feature/`, `fix/`, `docs/`, `refactor/`. Never push to `main` directly.
 
+## Worktree convention
+
+Always work in a separate git worktree, never in the main checkout. One
+worktree per branch, under `$VIBE_HOME/worktrees/` (default
+`~/.vibe/worktrees/`), in a per-repo bucket
+`<repo>-<sha256(common_git_dir)[:12]>/<name>/`.
+
+- Create: `git worktree add -b <branch> <path> origin/main` — fetch first;
+  new branches start from the remote default branch, not the current HEAD.
+- Reuse a worktree only when the branch matches and the path is valid (no
+  symlinks, `.git` is a file, same common git dir).
+- Clean up via the vibe worktree tooling, never `rm -rf`: dirty worktrees are
+  snapshotted to `refs/vibe/reaped/<name>` before removal; confirm before
+  deleting a branch that pre-existed the session.
+
 ## Agent behavior
 
 - Like-named topics go in the existing folder; only create a new folder
