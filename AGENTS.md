@@ -46,6 +46,8 @@ docs(kb): restructure linux folder to point to distro-specific steps
 
 Always create feature branches from `main`. Name branches with prefix:
 `feature/`, `fix/`, `docs/`, `refactor/`. Never push to `main` directly.
+Always create or update the remote PR for a pushed branch (`gh pr create`,
+`gh pr edit` on updates) — a pushed branch without a PR is incomplete.
 
 ## Worktree convention
 
