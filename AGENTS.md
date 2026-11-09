@@ -6,11 +6,11 @@
 computer/<distro|domain>/<topic>/README.md
 ```
 
-One topic per folder, one `README.md` per topic. Notes apply to distro on path (`computer/arch/...`, `computer/debian/...`); say which releases note covers.
+One topic per folder. One `README.md` per topic. Notes match distro in path (`computer/arch/...`, `computer/debian/...`). State releases covered.
 
 ## Note format
 
-Every `README.md` follows this shape:
+`README.md` shape:
 
 1. `# <Topic> Setup (<distro> <version>)` — title name topic and target.
 2. Short intro: what does, when need.
@@ -51,3 +51,4 @@ Always work in separate git worktree, never main checkout. One worktree per bran
 
 - Like-named topic go in existing folder; only create new folder when no topic folder match.
 - Never delete existing command or comment you not ask to change.
+- Any `AGENTS.md` change must be followed by `/caveman-compress AGENTS.md` before commit.
