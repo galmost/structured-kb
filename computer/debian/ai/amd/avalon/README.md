@@ -160,17 +160,36 @@ name = "Qwen3.8-Flash-Next-Avalon-IQ3KS-00001-of-00033.gguf"
 provider = "avalon"
 alias = "avalon"
 thinking = "low"
+thinking_levels = [
+    "low",
+    "medium",
+    "xhigh",
+]
+auto_compact_threshold = 60000
 
 [[models]]
 name = "qwen2.5-coder-7b-instruct-q4_k_m-00001-of-00002.gguf"
 provider = "qwen-coder"
 alias = "qwen2.5-coder"
 thinking = "medium"
+thinking_levels = [
+    "low",
+    "medium",
+    "xhigh",
+]
+auto_compact_threshold = 24000
 ```
 
 Two separate entries, one per local server: `thinking = "low"` for
 `avalon` (Qwen3.8-Flash-Next, port 8080), `thinking = "medium"` for
-`qwen2.5-coder` (port 8081).
+`qwen2.5-coder` (port 8081). Both entries expose `thinking_levels` of
+`low`, `medium`, `xhigh` — the only values the `--jinja` chat templates
+accept; anything else (e.g. `high`, `max`) makes llama-server fail with a
+Jinja `Unexpected reasoning effort` exception. Keep
+`auto_compact_threshold` below the server context: 60000 for avalon
+(`-c 65536`), 24000 for qwen2.5-coder (`-c 32768`, see 5.2) — otherwise
+Vibe sends requests larger than the context and gets
+`400 ... exceeds the available context size`.
 
 ### 5.4 systemd user services (start/stop individually)
 
@@ -238,6 +257,17 @@ Then select the model in Vibe: `vibe --model qwen2.5-coder`. Smoke test:
   a recorded tool call with `arguments` as a bare string (e.g. `'aria2c -i /tmp/avalon-dl... ... 2>&1'`)
   poisons that session's replay in `~/.vibe/logs/vibe.log`. That session cannot be resumed;
   start a fresh session and rerun the command with proper object arguments.
+- Vibe + `qwen2.5-coder` returns `400 ... request (N tokens) exceeds the available context size (32768 tokens)`
+  — the conversation outgrew the server's `-c 32768`. Set `auto_compact_threshold = 24000`
+  on the `qwen2.5-coder` model entry (section 5.3), or start the server with a larger
+  `CTX` (section 5.2).
+- Vibe + `qwen2.5-coder` logs `Completion neither reasoned nor called a tool ... tools_offered=12 finish_reason=stop`
+  and only answers in text — the 7B model is offered all tools but does not emit tool
+  calls. Not a permissions problem; use it for text-only work (e.g. caveman-compress,
+  `[utility_models]`) and use `avalon` or a hosted model for file/repo agent tasks.
+- Vibe + local model fails with `Jinja Exception: Unexpected reasoning effort ... Supported types are xhigh (default), medium, and low`
+  — the model entry has a `thinking` value outside `low`/`medium`/`xhigh` (e.g. `high`,
+  `max`). Fix the entry per section 5.3.
 
 ## Source
 
