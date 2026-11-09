@@ -156,11 +156,21 @@ providers = [
 ]
 
 [[models]]
+name = "Qwen3.8-Flash-Next-Avalon-IQ3KS-00001-of-00033.gguf"
+provider = "avalon"
+alias = "avalon"
+thinking = "low"
+
+[[models]]
 name = "qwen2.5-coder-7b-instruct-q4_k_m-00001-of-00002.gguf"
 provider = "qwen-coder"
 alias = "qwen2.5-coder"
-thinking = "low"
+thinking = "medium"
 ```
+
+Two separate entries, one per local server: `thinking = "low"` for
+`avalon` (Qwen3.8-Flash-Next, port 8080), `thinking = "medium"` for
+`qwen2.5-coder` (port 8081).
 
 ### 5.4 systemd user services (start/stop individually)
 
