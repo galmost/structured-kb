@@ -98,11 +98,13 @@ the Prerequisite in the intro):
 ```bash
 cd ~/git/terminus-2
 curl -fsS http://127.0.0.1:8080/v1/models
-vibe --trust -p 'Reply with exactly: pong'                            # global default (mistral) → pong
-vibe --trust --model avalon -p 'Reply with exactly: pong'              # local avalon → pong
+vibe --trust -p 'Reply with exactly: pong'                            # global active model → pong
+vibe --trust --model qwen3.8-flash-next-avalon -p 'Reply with exactly: pong'   # local avalon → pong
 ```
 
-Both verified on Debian 13 (GArk): each printed `pong`.
+Both verified on Debian 13 (GArk): each printed `pong`. Aliases come from
+`~/.vibe/config.toml` and can change — if one is unknown, the startup error
+lists the available ones.
 
 Benchmark instead of bloating config: `bench/bench.sh` in the repo is a
 streaming TTFT/tok-s probe (not wired into anything); baselines are recorded
