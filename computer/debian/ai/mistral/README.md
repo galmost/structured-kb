@@ -106,6 +106,10 @@ Both verified on Debian 13 (GArk): each printed `pong`. Aliases come from
 `~/.vibe/config.toml` and can change — if one is unknown, the startup error
 lists the available ones.
 
+Full setup record lives in the repo (`docs/setup.md`); `docs/validation-todo.md`
+lists what to re-validate when the environment drifts (aliases, baselines,
+server supervisor, unmerged branches).
+
 Benchmark instead of bloating config: `bench/bench.sh` in the repo is a
 streaming TTFT/tok-s probe (not wired into anything); baselines are recorded
 in the repo's `docs/benchmarks.md`:
