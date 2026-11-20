@@ -68,49 +68,18 @@ title = "mistral-medium-3.5"
 - Context: with `-c 65536` the model window is 64k — Vibe derives the compaction
   threshold from it.
 
-## 4. Project-scoped setup: terminus-2
+## 4. Project-scoped setup: terminus-2 (vanilla + opt-in tweaks)
 
-Run Vibe inside a dedicated project repo with its own model set, using a
-project-local `.vibe/config.toml`. Layers merge per key (project TOML wins
-over user TOML, unspecified values are inherited), and the project layer only
-loads when the folder is trusted. Example: `~/git/terminus-2`.
+`~/git/terminus-2` is a dedicated project repo that stays vanilla: its
+`.vibe/config.toml` is all comments, so Vibe inherits `~/.vibe/config.toml`
+per key (hosted mistral + local avalon are already defined there). Layers
+merge per key — project TOML wins over user TOML for keys it sets — and the
+project layer only loads when the folder is trusted.
 
 ```bash
 mkdir -p ~/git/terminus-2 && cd ~/git/terminus-2 && git init -b main
-```
-
-Create `.vibe/config.toml` in the project root:
-
-```toml
-active_model = "mistral-large-4-0-3"
-
-[[providers]]
-name = "avalon"
-api_base = "http://127.0.0.1:8080/v1"
-api_key_env_var = ""
-
-[[models]]
-alias = "mistral-medium-3.5"
-thinking = "high"
-
-[[models]]
-alias = "mistral-large-4-0-3"
-thinking = "high"
-
-[[models]]
-name = "Qwen3.8-Flash-Next-Avalon-IQ3KS-00001-of-00033.gguf"
-provider = "avalon"
-alias = "avalon"
-thinking = "low"
-thinking_levels = [
-    "low",
-    "medium",
-    "xhigh",
-]
-auto_compact_threshold = 60000
-
-[utility_models]
-title = "mistral-medium-3.5"
+# .vibe/config.toml: comments only (vanilla). Tweaks ship as commented
+# blocks there and in docs/tweaks.md — uncomment one at a time.
 ```
 
 Trust the folder (persistent) by adding it to `~/.vibe/trusted_folders.toml`:
@@ -129,11 +98,21 @@ the Prerequisite in the intro):
 ```bash
 cd ~/git/terminus-2
 curl -fsS http://127.0.0.1:8080/v1/models
-vibe --trust --model avalon -p 'Reply with exactly: pong'              # expect: pong
-vibe --trust --model mistral-large-4-0-3 -p 'Reply with exactly: pong' # expect: pong
+vibe --trust -p 'Reply with exactly: pong'                            # global default (mistral) → pong
+vibe --trust --model avalon -p 'Reply with exactly: pong'              # local avalon → pong
 ```
 
 Both verified on Debian 13 (GArk): each printed `pong`.
+
+Benchmark instead of bloating config: `bench/bench.sh` in the repo is a
+streaming TTFT/tok-s probe (not wired into anything); baselines are recorded
+in the repo's `docs/benchmarks.md`:
+
+```bash
+cd ~/git/terminus-2
+bench/bench.sh avalon http://127.0.0.1:8080/v1 Qwen3.8-Flash-Next-Avalon-IQ3KS-00001-of-00033.gguf 512 128
+BENCH_API_KEY="$MISTRAL_API_KEY" bench/bench.sh mistral https://api.mistral.ai/v1 mistral-large-4-0-3 512 128
+```
 
 ## Troubleshooting
 
