@@ -68,6 +68,73 @@ title = "mistral-medium-3.5"
 - Context: with `-c 65536` the model window is 64k — Vibe derives the compaction
   threshold from it.
 
+## 4. Project-scoped setup: terminus-2
+
+Run Vibe inside a dedicated project repo with its own model set, using a
+project-local `.vibe/config.toml`. Layers merge per key (project TOML wins
+over user TOML, unspecified values are inherited), and the project layer only
+loads when the folder is trusted. Example: `~/git/terminus-2`.
+
+```bash
+mkdir -p ~/git/terminus-2 && cd ~/git/terminus-2 && git init -b main
+```
+
+Create `.vibe/config.toml` in the project root:
+
+```toml
+active_model = "mistral-large-4-0-3"
+
+[[providers]]
+name = "avalon"
+api_base = "http://127.0.0.1:8080/v1"
+api_key_env_var = ""
+
+[[models]]
+alias = "mistral-medium-3.5"
+thinking = "high"
+
+[[models]]
+alias = "mistral-large-4-0-3"
+thinking = "high"
+
+[[models]]
+name = "Qwen3.8-Flash-Next-Avalon-IQ3KS-00001-of-00033.gguf"
+provider = "avalon"
+alias = "avalon"
+thinking = "low"
+thinking_levels = [
+    "low",
+    "medium",
+    "xhigh",
+]
+auto_compact_threshold = 60000
+
+[utility_models]
+title = "mistral-medium-3.5"
+```
+
+Trust the folder (persistent) by adding it to `~/.vibe/trusted_folders.toml`:
+
+```toml
+trusted = ["/home/galmost/git/terminus-2"]
+untrusted = []
+```
+
+Interactive sessions prompt to trust unknown folders; `-p` mode never
+trusts — pass `--trust` for a one-off trusted run.
+
+Verify both backends from the project root (Avalon server must be up — see
+the Prerequisite in the intro):
+
+```bash
+cd ~/git/terminus-2
+curl -fsS http://127.0.0.1:8080/v1/models
+vibe --trust --model avalon -p 'Reply with exactly: pong'              # expect: pong
+vibe --trust --model mistral-large-4-0-3 -p 'Reply with exactly: pong' # expect: pong
+```
+
+Both verified on Debian 13 (GArk): each printed `pong`.
+
 ## Troubleshooting
 
 - `connection refused` — server not running: `sg render -c 'avalon-server -c 65536'`.
