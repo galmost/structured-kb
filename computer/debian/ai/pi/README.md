@@ -182,6 +182,44 @@ allowlist). Allowlist only the non-secret harness files by appending:
 `git status` in `~` then shows only those three files; `auth.json`, sessions and
 logs stay ignored. Verify with `git check-ignore -v ~/.pi/agent/auth.json`.
 
+## 7. Caveman skill (terse output)
+
+`~/AGENTS.md` loads the `caveman` skill at the start of every pi run, so pi
+answers terse until the user says "stop caveman" or "normal mode". Pi
+discovers user skills from `<agent-dir>/skills/`, i.e. `~/.pi/agent/skills/`
+(see section 4 for the agent directory). Install the skill as a directory with
+`SKILL.md`:
+
+```bash
+mkdir -p ~/.pi/agent/skills/caveman
+# write ~/.pi/agent/skills/caveman/SKILL.md
+```
+
+The `SKILL.md` is the Agent Skills form of the caveman voice rules (answer
+first, no ceremony, payload verbatim, one idea per sentence), with command
+references adapted to pi: `/skill:caveman` instead of `/caveman`, so
+`/skill:caveman status`, `/skill:caveman ultra` etc. work. Source copy lives
+at `~/.vibe/skills/caveman/SKILL.md` (Vibe harness). Pi advertises the skill by
+name and description at startup and loads the full instructions on demand;
+force it with `/skill:caveman` and reload after edits with `/reload`.
+
+Track the skill in home_config by extending the `.pi` allowlist in
+`~/.gitignore` (section 6) with:
+
+```bash
+# ~/.gitignore
+!.pi/agent/skills/
+!.pi/agent/skills/**
+```
+
+Verify:
+
+```bash
+ls ~/.pi/agent/skills/caveman/SKILL.md
+pi -p 'Say exactly: pong' --no-session   # skill listed in startup diagnostics
+# in an interactive session: /skill:caveman  -> terse replies from then on
+```
+
 ## Troubleshooting
 
 - `not_ready` from `pi auth check --provider mistral` — run
@@ -205,6 +243,7 @@ logs stay ignored. Verify with `git check-ignore -v ~/.pi/agent/auth.json`.
 - [Pi docs — Choose a Model / models.json](https://pi.dev/docs/latest/models)
 - [Pi docs — Settings reference](https://pi.dev/docs/latest/settings)
 - [Pi docs — Providers (MISTRAL_API_KEY)](https://pi.dev/docs/latest/providers)
+- [Pi docs — Skills](https://pi.dev/docs/latest/skills)
 - [pi-mono on GitHub](https://github.com/badlogic/pi-mono)
 - [npm: @earendil-works/pi-coding-agent](https://www.npmjs.com/package/@earendil-works/pi-coding-agent)
 - [Avalon note in this repo](../amd/avalon/README.md)
