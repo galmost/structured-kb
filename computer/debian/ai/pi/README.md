@@ -37,17 +37,25 @@ lifecycle scripts, which pi does not need.
 
 ## 3. Authenticate to Mistral (hosted)
 
+Pi hides a provider's model list until it has credentials for it, so until this
+step `pi --list-models mistral` prints `No models available`, startup warns
+`No models match pattern "mistral/..."`, and `pi auth check --provider mistral`
+reports `not_ready` (`credentials_not_configured`). Expected, not an error.
+
+Pick one sign-in method — all need something from you (browser approval or an
+API key created at https://console.mistral.ai under "API keys"):
+
 ```bash
-pi auth login mistral               # browser OAuth or paste an API key; saved to ~/.pi/agent/auth.json
-pi auth check --provider mistral   # ready
+pi auth login mistral                    # browser OAuth; --no-browser uses a device code instead
+pi auth login mistral --api-key          # paste an API key instead of browser sign-in
+pi auth check --provider mistral         # ready
+pi --list-models mistral                 # mistral-large-latest, devstral-latest, codestral-latest, ...
 ```
 
-`auth.json` holds credentials — never commit it (the home_config `.gitignore` is
-default-deny, so it stays untracked; see section 6). Alternative for CI:
-`export MISTRAL_API_KEY=...` before starting pi.
-
-Until login, `pi --list-models mistral` prints `No models available` and startup
-warns `No models match pattern "mistral/..."` — expected, not an error.
+Credentials are stored in `~/.pi/agent/auth.json` — never commit it (the
+home_config `.gitignore` is default-deny, so it stays untracked; see section 6).
+Alternative for CI, no `auth.json` write: `export MISTRAL_API_KEY=...` before
+starting pi (e.g. via `~/.config/environment.d/`).
 
 ## 4. Harness files in `~/.pi/agent/`
 
