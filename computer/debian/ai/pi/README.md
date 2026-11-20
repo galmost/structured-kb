@@ -220,6 +220,9 @@ pi -p 'Say exactly: pong' --no-session   # skill listed in startup diagnostics
 # in an interactive session: /skill:caveman  -> terse replies from then on
 ```
 
+See [README-skills.md](README-skills.md) for the full user-skills layout,
+including the `caveman-compress` skill.
+
 ## Troubleshooting
 
 - `not_ready` from `pi auth check --provider mistral` — run
