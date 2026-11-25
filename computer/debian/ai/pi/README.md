@@ -1,49 +1,31 @@
 # Pi Coding Agent Harness with Mistral (Debian 13)
 
-[Pi](https://pi.dev) (badlogic pi-coding-agent) is a terminal coding agent with
-`read`/`bash`/`edit`/`write` tools. This note installs it user-local, makes the
-hosted **Mistral** API the default model (native provider, login via
-`pi auth login mistral`), and registers the local
-[Avalon](../amd/avalon/README.md) and qwen-coder `llama-server` instances as
-OpenAI-compatible providers in `models.json`.
+[Pi](https://pi.dev) (badlogic pi-coding-agent) is terminal agent with `read`/`bash`/`edit`/`write`. Note install user-local, make hosted **Mistral** API default (native provider, login `pi auth login mistral`), register local [Avalon](../amd/avalon/README.md) and qwen-coder `llama-server` as OpenAI-compatible providers in `models.json`.
 
-User-level configuration lives in the agent directory `~/.pi/agent/` (override
-with the `PI_CODING_AGENT_DIR` environment variable). Project-level config lives
-in `.pi/` under the working directory and loads only after the project is trusted.
+User config in `~/.pi/agent/` (override `PI_CODING_AGENT_DIR`). Project config in `.pi/` under work dir, load only after trust.
 
 ## 1. Prerequisites
 
-- Debian 13 (trixie), Node.js 24 from NodeSource (see
-  [Node.js Setup](../../nodejs/README.md)) with `~/.local/bin` first on `PATH`.
-- For the local providers: `avalon-server` on http://127.0.0.1:8080
-  (`sg render -c 'avalon-server -c 65536'`, see the Avalon note) and optionally
-  `qwen-coder-server` on http://127.0.0.1:8081 (wrapper in `~/.local/bin`,
-  default `-c 32768`).
-- A Mistral account for `pi auth login mistral` (browser OAuth or API key).
+- Debian 13 (trixie), Node.js 24 from NodeSource (see [Node.js Setup](../../nodejs/README.md)), `~/.local/bin` first on `PATH`.
+- Local providers: `avalon-server` on http://127.0.0.1:8080 (`sg render -c 'avalon-server -c 65536'`, see Avalon note), optional `qwen-coder-server` on http://127.0.0.1:8081 (wrapper `~/.local/bin`, default `-c 32768`).
+- Mistral account for `pi auth login mistral` (browser OAuth or API key).
 
 ## 2. Install
 
-The npm global prefix `/usr` is root-owned, so install user-local — this puts
-`pi` in `~/.local/bin`:
+npm global prefix `/usr` is root-owned; install user-local, put `pi` in `~/.local/bin`:
 
 ```bash
 npm install -g --prefix ~/.local --ignore-scripts @earendil-works/pi-coding-agent
 pi --version    # 1.5.2
 ```
 
-`@mariozechner/pi-coding-agent` is the legacy package name (stuck at 0.73.1) —
-use `@earendil-works/pi-coding-agent`. `--ignore-scripts` skips dependency
-lifecycle scripts, which pi does not need.
+`@mariozechner/pi-coding-agent` is legacy (stuck 0.73.1) — use `@earendil-works/pi-coding-agent`. `--ignore-scripts` skip lifecycle scripts, pi not need.
 
 ## 3. Authenticate to Mistral (hosted)
 
-Pi hides a provider's model list until it has credentials for it, so until this
-step `pi --list-models mistral` prints `No models available`, startup warns
-`No models match pattern "mistral/..."`, and `pi auth check --provider mistral`
-reports `not_ready` (`credentials_not_configured`). Expected, not an error.
+Pi hide model list until credentials; until then `pi --list-models mistral` print `No models available`, startup warn `No models match pattern "mistral/..."`, `pi auth check --provider mistral` report `not_ready` (`credentials_not_configured`). Expected, not error.
 
-Pick one sign-in method — all need something from you (browser approval or an
-API key created at https://console.mistral.ai under "API keys"):
+Pick one sign-in — need browser approval or API key from https://console.mistral.ai "API keys":
 
 ```bash
 pi auth login mistral                    # browser OAuth; --no-browser uses a device code instead
@@ -52,14 +34,11 @@ pi auth check --provider mistral         # ready
 pi --list-models mistral                 # mistral-large-latest, devstral-latest, codestral-latest, ...
 ```
 
-Credentials are stored in `~/.pi/agent/auth.json` — never commit it (the
-home_config `.gitignore` is default-deny, so it stays untracked; see section 6).
-Alternative for CI, no `auth.json` write: `export MISTRAL_API_KEY=...` before
-starting pi (e.g. via `~/.config/environment.d/`).
+Credentials in `~/.pi/agent/auth.json` — never commit (home_config `.gitignore` default-deny, stays untracked; see section 6). CI alternative, no `auth.json` write: `export MISTRAL_API_KEY=...` before start pi (e.g. via `~/.config/environment.d/`).
 
 ## 4. Harness files in `~/.pi/agent/`
 
-`settings.json` — default model plus per-model thinking levels:
+`settings.json` — default model plus per-model thinking:
 
 ```json
 {
@@ -80,8 +59,7 @@ starting pi (e.g. via `~/.config/environment.d/`).
 }
 ```
 
-`models.json` — local OpenAI-compatible providers (dummy `apiKey`; llama-server
-ignores authentication):
+`models.json` — local OpenAI-compatible providers (dummy `apiKey`; llama-server ignore auth):
 
 ```json
 {
@@ -120,10 +98,9 @@ ignores authentication):
 ```
 
 - Model `id` must match `curl http://127.0.0.1:8080/v1/models` exactly.
-- The Avalon chat template only accepts reasoning effort `xhigh` (default),
-  `medium`, `low` — hence `"low"` in `modelThinkingLevels`.
+- Avalon chat template only accept reasoning effort `xhigh` (default), `medium`, `low` — hence `"low"` in `modelThinkingLevels`.
 
-`AGENTS.md` — user-level instructions applied in every project:
+`AGENTS.md` — user-level instructions in every project:
 
 ```markdown
 # Global pi instructions
@@ -141,13 +118,7 @@ ignores authentication):
   in `models.json` as provider `avalon`.
 ```
 
-Project-level `.pi/` mirrors this layout (`settings.json`, `mcp.json`,
-`SYSTEM.md`, `APPEND_SYSTEM.md`, `extensions/`, `skills/`, `prompts/`,
-`themes/`) and loads after you trust the project (`--approve` / `--no-approve`
-on the CLI). `SYSTEM.md` replaces the system prompt, `APPEND_SYSTEM.md` appends
-to it; a trusted project file takes precedence over the agent-directory file of
-the same name. Example already in git: `Avalon/.pi/gg/APPEND_SYSTEM.md` is
-tracked, while `Avalon/.pi/SYSTEM.md` is gitignored because it is generated.
+Project `.pi/` mirror layout (`settings.json`, `mcp.json`, `SYSTEM.md`, `APPEND_SYSTEM.md`, `extensions/`, `skills/`, `prompts/`, `themes/`) load after trust project (`--approve` / `--no-approve`). `SYSTEM.md` replace system prompt, `APPEND_SYSTEM.md` append; trusted project file win over agent-dir file same name. Example in git: `Avalon/.pi/gg/APPEND_SYSTEM.md` tracked, `Avalon/.pi/SYSTEM.md` gitignored (generated).
 
 ## 5. Verify
 
@@ -162,13 +133,11 @@ pi -p 'Reply with exactly: pong' --model 'avalon/Qwen3.8-Flash-Next-Avalon-IQ3KS
 pi -p 'Reply with exactly: pong'    # after `pi auth login mistral`: uses default mistral/mistral-large-latest
 ```
 
-`-p` is one-shot mode (print answer and exit); `--no-session` skips session
-storage. `--model` accepts `provider/id` and an optional `:thinking` suffix.
+`-p` one-shot (print answer, exit); `--no-session` skip session storage. `--model` accept `provider/id` and optional `:thinking` suffix.
 
 ## 6. Tracking the harness in home_config
 
-`~` is the home_config worktree with a default-deny `.gitignore` (`*` then an
-allowlist). Allowlist only the non-secret harness files by appending:
+`~` is home_config worktree with default-deny `.gitignore` (`*` then allowlist). Allowlist only non-secret harness files:
 
 ```bash
 # ~/.gitignore
@@ -179,32 +148,20 @@ allowlist). Allowlist only the non-secret harness files by appending:
 !.pi/agent/settings.json
 ```
 
-`git status` in `~` then shows only those three files; `auth.json`, sessions and
-logs stay ignored. Verify with `git check-ignore -v ~/.pi/agent/auth.json`.
+`git status` in `~` show only those three files; `auth.json`, sessions, logs stay ignored. Verify `git check-ignore -v ~/.pi/agent/auth.json`.
 
 ## 7. Caveman skill (terse output)
 
-`~/AGENTS.md` loads the `caveman` skill at the start of every pi run, so pi
-answers terse until the user says "stop caveman" or "normal mode". Pi
-discovers user skills from `<agent-dir>/skills/`, i.e. `~/.pi/agent/skills/`
-(see section 4 for the agent directory). Install the skill as a directory with
-`SKILL.md`:
+`~/AGENTS.md` load `caveman` skill at start of every pi run, so pi answer terse until user say "stop caveman" or "normal mode". Pi discover user skills from `<agent-dir>/skills/`, i.e. `~/.pi/agent/skills/` (see section 4). Install skill as directory with `SKILL.md`:
 
 ```bash
 mkdir -p ~/.pi/agent/skills/caveman
 # write ~/.pi/agent/skills/caveman/SKILL.md
 ```
 
-The `SKILL.md` is the Agent Skills form of the caveman voice rules (answer
-first, no ceremony, payload verbatim, one idea per sentence), with command
-references adapted to pi: `/skill:caveman` instead of `/caveman`, so
-`/skill:caveman status`, `/skill:caveman ultra` etc. work. Source copy lives
-at `~/.vibe/skills/caveman/SKILL.md` (Vibe harness). Pi advertises the skill by
-name and description at startup and loads the full instructions on demand;
-force it with `/skill:caveman` and reload after edits with `/reload`.
+`SKILL.md` is Agent Skills form of caveman voice rules (answer first, no ceremony, payload verbatim, one idea per sentence), commands adapted to pi: `/skill:caveman` instead of `/caveman`, so `/skill:caveman status`, `/skill:caveman ultra` etc. work. Source copy at `~/.vibe/skills/caveman/SKILL.md` (Vibe harness). Pi advertise skill by name and description at startup, load full instructions on demand; force with `/skill:caveman`, reload after edits with `/reload`.
 
-Track the skill in home_config by extending the `.pi` allowlist in
-`~/.gitignore` (section 6) with:
+Track skill in home_config by extend `.pi` allowlist in `~/.gitignore` (section 6):
 
 ```bash
 # ~/.gitignore
@@ -220,25 +177,17 @@ pi -p 'Say exactly: pong' --no-session   # skill listed in startup diagnostics
 # in an interactive session: /skill:caveman  -> terse replies from then on
 ```
 
-See [README-skills.md](README-skills.md) for the full user-skills layout,
-including the `caveman-compress` skill.
+See [README-skills.md](README-skills.md) for full user-skills layout, including `caveman-compress` skill.
 
 ## Troubleshooting
 
-- `not_ready` from `pi auth check --provider mistral` — run
-  `pi auth login mistral` first.
-- `Warning: No models match pattern "mistral/..."` at startup — Mistral is not
-  logged in yet; local providers are unaffected.
-- `connection refused` on 127.0.0.1:8080 — avalon-server is not running:
-  `sg render -c 'avalon-server -c 65536'`. While the server is busy, requests
-  queue: `curl http://127.0.0.1:8080/slots` shows `"is_processing": true`.
-- Model not listed by `pi --list-models avalon` — the `id` in `models.json` does
-  not match `/v1/models`; fix the string.
-- `Jinja Exception: Unexpected reasoning effort ...` — thinking level outside
-  xhigh/medium/low; use `--thinking low` or set `modelThinkingLevels`.
+- `not_ready` from `pi auth check --provider mistral` — run `pi auth login mistral` first.
+- `Warning: No models match pattern "mistral/..."` at startup — Mistral not logged in yet; local providers unaffected.
+- `connection refused` on 127.0.0.1:8080 — avalon-server not running: `sg render -c 'avalon-server -c 65536'`. While busy, requests queue: `curl http://127.0.0.1:8080/slots` show `"is_processing": true`.
+- Model not listed by `pi --list-models avalon` — `id` in `models.json` not match `/v1/models`; fix string.
+- `Jinja Exception: Unexpected reasoning effort ...` — thinking level outside xhigh/medium/low; use `--thinking low` or set `modelThinkingLevels`.
 - `npm error ... permissions` on `npm install -g` — add `--prefix ~/.local`.
-- Project `.pi/` files not loaded — the project is not trusted; start pi with
-  `--approve` (or accept the trust prompt).
+- Project `.pi/` files not loaded — project not trusted; start pi with `--approve` (or accept trust prompt).
 
 ## Source
 
