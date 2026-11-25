@@ -2,9 +2,11 @@
 
 The home folder is itself the git worktree of `git@ssh.bitbucket.org:galmost/gark_home.git`
 (`.git` lives in `~`). A systemd **user** timer commits and pushes all tracked
-dotfiles once a day to the `auto/snapshot` branch, so agent damage is
-recoverable per file and per day. Package lists are dumped alongside, so a
-reinstall is scriptable.
+dotfiles once a day **directly to `main`** with a UTC-timestamped commit
+message, so the history doubles as a timeline and agent damage is recoverable
+per file and per day. Package lists are dumped alongside, so a reinstall is
+scriptable. Repo convention (see `~/AGENTS.md`): no feature branches or PRs,
+commit and push straight to `main`.
 
 ## 1. What is stored
 
@@ -30,8 +32,9 @@ systemctl --user list-timers gark-home-snapshot.timer
 ```
 
 The script `cd ~`, regenerates the package lists, `git add -A`, commits only
-if something changed, and pushes `HEAD:refs/heads/auto/snapshot`. It never
-pushes to `main`. In non-interactive contexts it exports
+if something changed with message
+`<UTC timestamp> chore(config): daily home snapshot`, and pushes
+`HEAD:main`. In non-interactive contexts it exports
 `SSH_AUTH_SOCK=/run/user/$(id -u)/keyring/ssh` so the Bitbucket key from the
 GNOME keyring agent is used (see ssh-bitbucket-keyring note).
 
@@ -41,9 +44,9 @@ Manual run: `bash ~/galmost@GArk/bin/home-snapshot.sh`
 
 ```bash
 cd ~ && git fetch origin
-git log --oneline origin/auto/snapshot          # pick a snapshot
-git checkout origin/auto/snapshot -- <path>     # restore one file
-git checkout origin/auto/snapshot -- .          # restore everything tracked
+git log --oneline origin/main                   # pick a snapshot commit
+git checkout origin/main -- <path>              # restore one file
+git checkout origin/main -- .                   # restore everything tracked
 # package lists for a fresh install:
 #   pkexec dpkg --set-selections < galmost@GArk/packages/dpkg-selections.txt
 #   pkexec apt-get dselect-upgrade   (or: xargs apt-get install < apt-manual.txt)
@@ -61,6 +64,7 @@ git checkout origin/auto/snapshot -- .          # restore everything tracked
 
 ## Source
 
-- home_config conventions: `~/AGENTS.md` in the gark_home repo
+- home_config conventions: `~/AGENTS.md` in the gark_home repo (push directly
+  to main, timestamped commit prefix `YYYY-MM-DDTHH:MM:SSZ `)
 - ssh-bitbucket-keyring note (keyring agent socket)
 - https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html
