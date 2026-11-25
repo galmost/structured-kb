@@ -1,33 +1,20 @@
 # Pi Skills (Debian 13)
 
-User skills for the [pi coding agent](README.md) live in the agent directory's
-`skills/` folder: `~/.pi/agent/skills/<name>/SKILL.md` (override the agent
-directory with `PI_CODING_AGENT_DIR`). Pi advertises each skill by name and
-description at startup and loads the full `SKILL.md` only when a task matches;
-force one with `/skill:<name>` and pick up edits with `/reload`. Project
-alternative: `.pi/skills/` in a trusted repo.
+User skills for [pi coding agent](README.md) live in `skills/` folder: `~/.pi/agent/skills/<name>/SKILL.md` (override with `PI_CODING_AGENT_DIR`). Pi shows skill name/description at startup, loads full `SKILL.md` only when task matches. Force with `/skill:<name>`, pick up edits with `/reload`. Project alt: `.pi/skills/` in trusted repo.
 
-This host installs two skills, both ported from the Vibe harness copies under
-`~/.vibe/skills/` with command references changed from `/caveman...` to
-`/skill:caveman...`:
+Host installs two skills, ported from Vibe copies under `~/.vibe/skills/`, commands changed from `/caveman...` to `/skill:caveman...`:
 
 | skill | dir | what it does |
 |---|---|---|
-| `caveman` | `~/.pi/agent/skills/caveman/` | terse output voice, stays on until "stop caveman" / "normal mode" |
-| `caveman-compress` | `~/.pi/agent/skills/caveman-compress/` | compresses natural-language memory files (AGENTS.md, todos) to save input tokens |
+| `caveman` | `~/.pi/agent/skills/caveman/` | terse voice, on until "stop caveman" / "normal mode" |
+| `caveman-compress` | `~/.pi/agent/skills/caveman-compress/` | compress memory files (AGENTS.md, todos) save tokens |
 
-`~/AGENTS.md` loads `caveman` at the start of every run.
+`~/AGENTS.md` loads `caveman` every run.
 
 ## 1. Prerequisites
 
-- pi installed and configured — see [README.md](README.md) (sections 1–4).
-- For `caveman-compress`: Python 3 (stdlib only for the `openai-compat`
-  provider) and a reachable model endpoint. On this host use the local Avalon
-  server: `CAVEMAN_COMPRESS_PROVIDER=openai-compat` with
-  `CAVEMAN_COMPRESS_ENDPOINT=http://127.0.0.1:8080/v1` (avalon-server must be
-  running, see [Avalon note](../amd/avalon/README.md)). Other providers
-  (`claude` CLI, Anthropic API, `opencode`) work as in the upstream skill —
-  see `SECURITY.md` in the skill dir.
+- pi installed/configured — see [README.md](README.md) (sections 1–4).
+- `caveman-compress`: Python 3 (stdlib only for the `openai-compat` provider) + Mistral API key (same as pi, from `~/.pi/agent/auth.json` — section 3). Other providers (`claude` CLI, Anthropic API, `opencode`, local) work upstream — see `SECURITY.md` in skill dir.
 
 ## 2. Install
 
@@ -41,27 +28,24 @@ sed -i 's|/caveman-compress|/skill:caveman-compress|g; s|/caveman|/skill:caveman
   ~/.pi/agent/skills/caveman/SKILL.md ~/.pi/agent/skills/caveman-compress/SKILL.md
 ```
 
-`caveman-compress` bundles `scripts/` (`python3 -m scripts <file>` run from
-the skill dir); it sends the file's full text to the configured provider, so
-never point it at secret-looking files (`.env`, credentials) — those are
-refused before reading. Backups go to
-`$XDG_DATA_HOME/caveman-compress/backups/<parent-dir-name>-<hash>/`, not
-beside the source file.
+`caveman-compress` bundles `scripts/` (`python3 -m scripts <file>` from skill dir); sends full file text to provider. Never point at secret files (`.env`, credentials) — refused before reading. Backups to `$XDG_DATA_HOME/caveman-compress/backups/<parent-dir-name>-<hash>/`, not beside source.
 
-## 3. Configure the compress provider (local Avalon)
+## 3. Configure the compress provider (Mistral large-latest, low effort)
+
+`~/.config/environment.d/caveman-compress.conf` (tracked home_config, no secrets) sets non-secret vars:
 
 ```bash
-export CAVEMAN_COMPRESS_PROVIDER=openai-compat
-export CAVEMAN_COMPRESS_ENDPOINT=http://127.0.0.1:8080/v1
-# optional: export CAVEMAN_COMPRESS_MODEL=<model id from /v1/models>
+CAVEMAN_COMPRESS_PROVIDER=openai-compat
+CAVEMAN_COMPRESS_ENDPOINT=https://api.mistral.ai/v1
+CAVEMAN_COMPRESS_MODEL=mistral-large-latest
+CAVEMAN_COMPRESS_REASONING_EFFORT=low
 ```
 
-Put the exports in `~/.config/environment.d/` so they apply to every shell.
+API key never on disk: `~/.zshrc` exports `CAVEMAN_COMPRESS_API_KEY` reading `mistral.key` from `~/.pi/agent/auth.json` at shell start. `scripts/compress.py` patched for Mistral: `reasoning_effort` top-level (Mistral rejects `chat_template_kwargs` HTTP 422), list `content` joined. Local servers (Avalon 8080, qwen-coder 8081) work, but 88 GiB Avalon OOMs on 30 GiB RAM, 7B coder fails marker check. Mistral reliable default.
 
 ## 4. Track the skills in home_config
 
-`~` is default-deny; extend the `.pi` allowlist in `~/.gitignore` (see
-README.md section 6):
+`~` default-deny; extend `.pi` allowlist in `~/.gitignore` (see README.md section 6):
 
 ```bash
 # ~/.gitignore
@@ -69,9 +53,7 @@ README.md section 6):
 !.pi/agent/skills/**
 ```
 
-`git status` in `~` then shows the skill files; `auth.json` and sessions stay
-ignored. Verify: `git check-ignore -v ~/.pi/agent/auth.json` still matches
-the `*` rule.
+`git status` in `~` shows skill files; `auth.json`/sessions ignored. Verify: `git check-ignore -v ~/.pi/agent/auth.json` matches `*` rule.
 
 ## 5. Verify
 
@@ -84,17 +66,11 @@ pi -p 'Say exactly: pong' --no-session        # skills listed in startup diagnos
 
 ## Troubleshooting
 
-- Skill not listed at pi startup — wrong directory: must be
-  `~/.pi/agent/skills/<name>/SKILL.md`, not `~/.pi/agent/skills/<name>.md`
-  alone; run `/reload` after moving it.
-- `caveman-compress` fails with connection refused — Avalon not running:
-  `sg render -c 'avalon-server -c 65536'`, then retry.
-- `caveman-compress` refuses the file — extension not in the natural-language
-  allowlist (.md, .txt, .typ, .tex, extensionless) or name looks like a
-  secret; compress a different file.
-- Backup already exists for the file — restore from
-  `$XDG_DATA_HOME/caveman-compress/backups/...` first; the skill refuses to
-  re-compress an already-compressed file.
+- Not listed at startup — wrong dir: must be `~/.pi/agent/skills/<name>/SKILL.md`, not `~/.pi/agent/skills/<name>.md`; run `/reload` after move.
+- `caveman-compress` HTTP 401 — `CAVEMAN_COMPRESS_API_KEY` empty: new shell (key from `~/.zshrc`/`~/.pi/agent/auth.json`) or `pi auth login mistral --api-key`.
+- `caveman-compress` HTTP 422 `chat_template_kwargs` — Mistral patch missing in `scripts/compress.py`; re-copy skill dir.
+- `caveman-compress` refuses file — extension not in allowlist (.md, .txt, .typ, .tex, extensionless) or name looks secret; pick different file.
+- Backup exists — restore from `$XDG_DATA_HOME/caveman-compress/backups/...` first; skill refuses re-compress of compressed file.
 
 ## Source
 
@@ -103,3 +79,4 @@ pi -p 'Say exactly: pong' --no-session        # skills listed in startup diagnos
 - Upstream Vibe skill copies: `~/.vibe/skills/caveman/`, `~/.vibe/skills/caveman-compress/`
 - [Pi harness note in this repo](README.md)
 - [Avalon note in this repo](../amd/avalon/README.md)
+- [Mistral note in this repo](../mistral/README.md)
