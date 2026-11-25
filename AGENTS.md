@@ -52,3 +52,8 @@ Always create feature branches from `main`. Name branches with prefix:
 - Like-named topics go in the existing folder; only create a new folder
   when no topic folder matches.
 - Never delete an existing command or comment you were not asked to change.
+- After adding or heavily editing a long `README.md` or `AGENTS.md`, run
+  `/skill:caveman-compress <abs path>` on it if it is not already compressed
+  (check for a backup in `$XDG_DATA_HOME/caveman-compress/backups/` first).
+  The skill compresses in place via Mistral `mistral-large-latest`; see
+  `computer/debian/ai/caveman-compress/README.md`.
