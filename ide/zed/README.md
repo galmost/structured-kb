@@ -13,6 +13,24 @@ This folder contains the current Zed editor settings and configuration files.
 - Split editor: `Cmd/Ctrl + \`.
 - Toggle terminal: `Cmd/Ctrl + ~`.
 
+### Terminal Shell
+- Integrated terminal runs zsh as a login shell, pinned in `settings.json`:
+
+```json
+"terminal": {
+  "shell": {
+    "with_arguments": {
+      "program": "/usr/bin/zsh",
+      "args": ["--login"]
+    }
+  }
+}
+```
+
+Zed otherwise uses the shell from `/etc/passwd`; the explicit pin keeps the
+terminal on zsh (with `~/.zshrc`, OMZ and the p10k prompt) even if the login
+shell changes. Requires zsh installed, see `computer/debian/zsh/README.md`.
+
 ### Extensions
 - List of installed extensions (if any):
   - None (default setup).
