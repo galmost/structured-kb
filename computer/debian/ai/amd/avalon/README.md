@@ -98,6 +98,26 @@ server listens on `http://127.0.0.1:8080`, the request above returns `"content":
 at ~31 tokens/s, MTP draft acceptance 0.85 (17/20). The installer prints
 `gfx1101: should work, not measured` — it works.
 
+## 5. Model recovery (models are not backed up)
+
+`~/Avalon-models` is 134G — too big for the off-box backup. Recovery is:
+restore the home folder from the gark_home git snapshots (configs, wrappers,
+server scripts), then re-download the models and verify against the manifest:
+
+```bash
+# manifest with sha256 per GGUF, committed in this folder:
+cat models-manifest.sha256        # 39 files under ~/Avalon-models/<repo>/
+# re-download (Hugging Face repos named after the folders, e.g.
+#   freriadoc/Qwen3.8-Flash-Next-Avalon-GGUF, Qwen/Qwen2.5-Coder-7B-Instruct-GGUF)
+# or re-run the Avalon installer, which downloads and SHA-256-verifies itself:
+avalon-server -c 65536            # after reinstall, first run fetches missing files
+# verify:
+cd ~/Avalon-models && sha256sum -c ~/git/structured-kb/computer/debian/ai/amd/avalon/models-manifest.sha256
+```
+
+If a sha256 mismatches, delete that file and re-download; do not serve a model
+that fails verification.
+
 ## Troubleshooting
 
 - `ROCm 5.7.1 found; Avalon is tested with ROCm 7.2.4 only` — you have Debian's ROCm.
