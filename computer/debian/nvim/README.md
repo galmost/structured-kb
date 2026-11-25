@@ -1,9 +1,6 @@
 # Neovim Setup (Debian 13)
 
-Neovim (`nvim`) is the actively maintained Vim fork. Debian 13 (trixie)
-ships it as the `neovim` package (NVIM v0.10.4). Installing it also
-registers `nvim` as the system `vim`, `view` and `vimdiff` via
-`update-alternatives`, so plain `vim` starts Neovim.
+`nvim` is Vim fork still maintained. Debian 13 (trixie) ship as `neovim` package (NVIM v0.10.4). Install also register `nvim` as system `vim`, `view` and `vimdiff` via `update-alternatives`, so plain `vim` start Neovim.
 
 ## 1. Install
 
@@ -12,10 +9,7 @@ pkexec apt-get update
 pkexec apt-get install -y neovim
 ```
 
-Use `sudo apt-get install -y neovim` instead if passwordless sudo is
-configured. `pkexec` is preferred here because `sudo` prompts for a
-password in a non-interactive shell, while `pkexec` authenticates via
-polkit.
+Use `sudo apt-get install -y neovim` instead if passwordless sudo configured. `pkexec` preferred here because `sudo` prompt password in non-interactive shell, while `pkexec` authenticate via polkit.
 
 ## 2. Verify
 
@@ -25,7 +19,7 @@ nvim --version
 
 Expected on Debian 13 (trixie): `NVIM v0.10.4`, `LuaJIT 2.1`.
 
-Confirm the `vi`/`vim` alternatives now resolve to nvim:
+Confirm `vi`/`vim` alternatives now resolve to nvim:
 
 ```bash
 readlink -f /usr/bin/vi    # /usr/bin/nvim
@@ -34,16 +28,14 @@ readlink -f /usr/bin/vim   # /usr/bin/nvim
 
 ## 3. Pin `vi`/`vim` to nvim
 
-The package registers nvim for `vi`, `vim`, `ex`, `view` and `vimdiff` in
-auto mode, so they already point to nvim. Pin them explicitly so a future
-package with higher priority cannot steal the link:
+Package register nvim for `vi`, `vim`, `ex`, `view` and `vimdiff` in auto mode, so already point to nvim. Pin them explicit so future package with higher priority cannot steal link:
 
 ```bash
 pkexec update-alternatives --set vi /usr/bin/nvim
 pkexec update-alternatives --set vim /usr/bin/nvim
 ```
 
-This switches the links to manual mode:
+This switch links to manual mode:
 
 ```bash
 update-alternatives --display vi   # "manual mode ... points to /usr/bin/nvim"
@@ -51,39 +43,36 @@ update-alternatives --display vi   # "manual mode ... points to /usr/bin/nvim"
 
 ## 4. Point `vim` back at real Vim (optional)
 
-If you want `vim` to stay classic Vim and use `nvim` explicitly:
+If want `vim` stay classic Vim and use `nvim` explicit:
 
 ```bash
 pkexec update-alternatives --config vim
 ```
 
-Pick the `/usr/bin/vim.basic` entry in the interactive list.
+Pick `/usr/bin/vim.basic` entry in interactive list.
 
 ## Troubleshooting
 
 ### `sudo apt ...` hangs on a password prompt in scripts/terminals without a TTY
-Use `pkexec apt ...` instead; it authenticates through polkit and works
-non-interactively in this session.
+Use `pkexec apt ...` instead; it authenticate through polkit and work non-interactively in this session.
 
 ### `nvim: command not found` right after install
-The shell cached the old PATH lookup. Run:
+Shell cached old PATH lookup. Run:
 
 ```bash
 hash -r
 ```
 
-or open a new shell, then retry `nvim --version`.
+or open new shell, then retry `nvim --version`.
 
 ### `vim` still starts classic Vim after install
-Check which alternative is selected:
+Check which alternative selected:
 
 ```bash
 update-alternatives --display vim
 ```
 
-In auto mode the highest-priority alternative wins; neovim registers
-itself for `vim`, so reinstalling with `pkexec apt-get install --reinstall -y neovim`
-restores it, or switch manually with `pkexec update-alternatives --config vim`.
+In auto mode highest-priority alternative win; neovim register itself for `vim`, so reinstall with `pkexec apt-get install --reinstall -y neovim` restore it, or switch manual with `pkexec update-alternatives --config vim`.
 
 ## Source
 

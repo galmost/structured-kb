@@ -1,7 +1,6 @@
 # CLI Tools Install (Debian 13)
 
-Daily-driver terminal tools for agent and interactive use: ripgrep, fd,
-jq, fzf, bat, eza, htop, ncdu, duf, plus git/curl/python3/node base.
+Tools for terminal. ripgrep fd jq fzf bat eza htop ncdu duf git curl python3 node.
 
 ## 1. Prerequisites
 
@@ -9,8 +8,7 @@ jq, fzf, bat, eza, htop, ncdu, duf, plus git/curl/python3/node base.
 pkexec apt update
 ```
 
-In non-interactive shells prefer `pkexec` over `sudo` (polkit auth, no
-password prompt).
+Use `pkexec` not `sudo` when no interactive. polkit auth. no password ask.
 
 ## 2. Install from apt
 
@@ -18,14 +16,11 @@ password prompt).
 pkexec apt install -y fzf bat eza htop ncdu
 ```
 
-`rg` and `fd` may already ship in the agent PATH (e.g. `~/.pi/agent/bin/`);
-apt copies exist as fallback: `pkexec apt install -y ripgrep fd-find`.
-On Debian the `bat` binary is named `batcat`.
+`rg` `fd` maybe already in `~/.pi/agent/bin/`. fallback: `pkexec apt install -y ripgrep fd-find`. Debian `bat` name is `batcat`.
 
 ## 3. Install duf (not in Debian repos)
 
-Only `.apk`/`.deb`/`.rpm` assets are published, no plain tarball.
-No-root path — extract the deb into `~/.local/bin`:
+Only `.apk` `.deb` `.rpm` exist. no tarball. no-root: extract deb to `~/.local/bin`:
 
 ```bash
 cd /tmp
@@ -35,9 +30,9 @@ install -m 755 duf-extract/usr/bin/duf ~/.local/bin/duf
 rm -rf duf.deb duf-extract
 ```
 
-Root alternative: `pkexec dpkg -i duf.deb`.
+Root way: `pkexec dpkg -i duf.deb`.
 
-`dust` is also absent from trixie repos; `ncdu` covers disk usage.
+`dust` not in trixie. `ncdu` do disk usage.
 
 ## 4. Verify
 
@@ -53,7 +48,7 @@ ncdu --version      # ncdu 1.22
 duf --version       # duf 0.9.1
 ```
 
-Smoke tests:
+Test:
 
 ```bash
 rg -l AGENTS.md --glob '*.md' ~/.pi/agent
@@ -65,22 +60,17 @@ eza -1 ~
 
 ## 5. Tested
 
-Debian 13 (trixie), commands run for real. Installed: fzf 0.60, bat 0.25.0
-(`batcat`), eza, htop 3.4.1, ncdu 1.22 via apt; duf 0.9.1 via deb extract.
-rg 15.2.0 and fd 10.5.2 already present in `~/.pi/agent/bin/`.
+Debian 13 trixie. real run. installed: fzf 0.60, bat 0.25.0 (`batcat`), eza, htop 3.4.1, ncdu 1.22 via apt. duf 0.9.1 via deb extract. rg 15.2.0 fd 10.5.2 in `~/.pi/agent/bin/`.
 
 ## Troubleshooting
 
 ### pkexec: "Request dismissed"
 
-No polkit agent in the current shell (non-interactive session). Use the
-no-root deb-extract path from section 3, or run pkexec from a desktop
-terminal.
+No polkit agent. non-interactive. use no-root deb extract from section 3. or run from desktop terminal.
 
 ### duf release download is not gzip
 
-duf publishes `.apk`/`.deb`/`.rpm`, not `.tar.gz`. A `.tar.gz` URL
-returns an HTML error page; use the `.deb` asset and `dpkg-deb -x`.
+duf give `.apk` `.deb` `.rpm`. no `.tar.gz`. `.tar.gz` URL give HTML error. use `.deb` and `dpkg-deb -x`.
 
 ## Source
 

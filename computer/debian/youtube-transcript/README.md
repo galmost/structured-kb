@@ -1,21 +1,16 @@
 # YouTube transcript extraction (Debian 13)
 
-Pull the captions/transcript of a YouTube video without a browser or API key.
+Get YouTube video captions/transcript. No browser. No API key.
 
 ## Why yt-dlp
 
-The plain caption endpoints are not reliably reachable from a shell or a
-read-only web fetcher:
+Plain caption endpoints not work from shell or web fetcher:
 
-- `https://www.youtube.com/api/timedtext?v=<id>&lang=en...` returns HTTP 200
-  with an **empty body** — YouTube now requires a PoToken (proof-of-origin)
-  for most clients.
-- The signed `baseUrl` found in the watch page's `ytInitialPlayerResponse`
-  (`captionTracks`) has the same problem from curl.
-- Web-fetch tools (`open_url`) are blocked on `youtube.com/api/timedtext`.
+- `https://www.youtube.com/api/timedtext?v=<id>&lang=en...` returns HTTP 200 **empty body** — YouTube need PoToken (proof-of-origin) for most clients.
+- Signed `baseUrl` in watch page `ytInitialPlayerResponse` (`captionTracks`) same problem from curl.
+- Web-fetch tools (`open_url`) blocked on `youtube.com/api/timedtext`.
 
-`yt-dlp` negotiates a working player client itself, so `--write-auto-subs`
-just works. Install it ephemerally with `uv` (no system package needed):
+`yt-dlp` find working player itself, so `--write-auto-subs` work. Install with `uv` (no system package):
 
 ```bash
 ~/.local/bin/uv tool run yt-dlp --version   # 2026.10.26
@@ -31,13 +26,11 @@ cd /tmp
 ```
 
 - `--skip-download`: captions only, no video.
-- `--write-auto-subs`: include auto-generated (ASR) captions — most videos
-  have no manual transcript. Drop it to get manual captions only.
-- `--sub-format json3`: easiest to parse (events with `tStartMs` + `segs`).
-  Other options: `srt`, `vtt`, `ttml`.
-- Output: `video.en.json3` (also `.en.vtt` etc. if requested).
+- `--write-auto-subs`: get auto captions (ASR) — most videos no manual transcript. Drop for manual only.
+- `--sub-format json3`: easy parse (`tStartMs` + `segs`). Others: `srt`, `vtt`, `ttml`.
+- Output: `video.en.json3` (also `.en.vtt` etc.)
 
-Check which caption tracks exist (watch page HTML, no login needed):
+Check caption tracks exist (watch page HTML, no login):
 
 ```bash
 curl -fsS -A 'Mozilla/5.0' 'https://www.youtube.com/watch?v=<id>&hl=en' -o /tmp/yt.html
@@ -68,22 +61,15 @@ EOF
 
 ## Caveats
 
-- ASR captions garble names: "Quen" = Qwen, "Orca Router" = mradermacher,
-  "coder 3101" = coder3101, "Gemma 4E4B" = gemma-4-E4B, "Gemma 431B" =
-  gemma-4-31B. Cross-check model/author names on Hugging Face before using
-  them in configs.
-- Auto captions have no punctuation and merge words occasionally; fine for
-  summarising, quote-check against the audio for exact wording.
-- Some videos have no caption track at all (then yt-dlp reports none).
+- ASR garble names: "Quen" = Qwen, "Orca Router" = mradermacher, "coder 3101" = coder3101, "Gemma 4E4B" = gemma-4-E4B, "Gemma 431B" = gemma-4-31B. Check model/author names on Hugging Face before use in configs.
+- Auto captions no punctuation, merge words sometimes; OK for summary, check audio for exact words.
+- Some videos no caption track (yt-dlp report none).
 
 ## Example
 
-`https://www.youtube.com/watch?v=j-VqPVjztJE` ("I Tested Every Uncensored
-Local AI Model (8GB to 32GB VRAM)", Kai, 29:38): only an `en` ASR track
-exists. Fetched 438 KB json3 → 793 segments → ~29k chars of text in seconds.
+`https://www.youtube.com/watch?v=j-VqPVjztJE` ("I Tested Every Uncensored Local AI Model (8GB to 32GB VRAM)", Kai, 29:38): only `en` ASR track. Got 438 KB json3 → 793 segments → ~29k chars in seconds.
 
 ## Source
 
-- [yt-dlp](https://github.com/yt-dlp/yt-dlp) — subtitle options
-  (`--write-auto-subs`, `--sub-format`)
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) — subtitle options (`--write-auto-subs`, `--sub-format`)
 - YouTube `ytInitialPlayerResponse.captionTracks` structure

@@ -1,11 +1,6 @@
 # aria2c Setup (Debian 13)
 
-`aria2c` is a lightweight command-line download utility that supports
-HTTP(S), FTP, SFTP and BitTorrent, with multi-connection (segmented)
-downloads and resume. Use it when a single-stream download (curl, wget,
-`hf download` without `hf_transfer`) is slower than your link because the
-server caps per-connection rate — common with Hugging Face, which limits
-per-IP throughput.
+`aria2c` lightweight tool. Downloads fast. Supports HTTP(S), FTP, SFTP, BitTorrent. Multi-connection. Resume. Use when curl, wget, `hf download` without `hf_transfer` too slow. Server caps speed per connection. Hugging Face does this.
 
 ## 1. Install
 
@@ -13,7 +8,7 @@ per-IP throughput.
 pkexec apt install -y aria2
 ```
 
-Use `sudo apt install -y aria2` instead if passwordless sudo is configured.
+Use `sudo apt install -y aria2` if no sudo password.
 
 Verify:
 
@@ -21,7 +16,7 @@ Verify:
 aria2c --version
 ```
 
-Debian 13 (trixie) ships aria2 1.37.0.
+Debian 13 has aria2 1.37.0.
 
 ## 2. Single file, segmented download
 
@@ -29,16 +24,13 @@ Debian 13 (trixie) ships aria2 1.37.0.
 aria2c -x 16 -s 16 -c https://example.com/bigfile.iso
 ```
 
-- `-x 16` / `-s 16`: up to 16 connections, 16 segments per file. The server
-  must support range requests; Hugging Face does.
-- `-c`: continue/resume if a previous download was interrupted.
-- Downloads to the current directory by default; `-d <dir>` sets the target.
+- `-x 16` / `-s 16`: 16 connections, 16 segments. Server need range requests. Hugging Face has them.
+- `-c`: resume interrupted download.
+- Downloads to current dir. `-d <dir>` set other dir.
 
 ## 3. Download a list of URLs from an input file
 
-aria2 input files have one URL per line, with optional per-URL directives on
-following lines (one tab-indented `key=value` per line). `out=` sets the
-output path relative to `--dir`, and preserves subdirectories:
+Input file: one URL per line. More options on next lines (tab + `key=value`). `out=` set path relative to `--dir`. Keeps subdirectories:
 
 ```bash
 cat > /tmp/files.txt <<'EOF'
@@ -54,15 +46,12 @@ aria2c -i /tmp/files.txt -j 16 -x 16 -s 16 -c \
   --summary-interval=120 | tee /tmp/aria2c.log
 ```
 
-- `-i <file>`: input file. `-j 16`: 16 downloads in parallel.
-- `-c`: resume. Incomplete files keep an `.aria2` control file next to them;
-  rerunning the same command resumes instead of restarting.
-- `--file-allocation=none`: skip pre-allocating disk (faster start, needed
-  on some filesystems).
-- `--summary-interval=120`: print a progress summary every 120 seconds.
+- `-i <file>`: input file. `-j 16`: 16 downloads at once.
+- `-c`: resume. Unfinished files keep `.aria2` file. Run same command to continue.
+- `--file-allocation=none`: skip disk pre-allocate. Faster start. Needed on some filesystems.
+- `--summary-interval=120`: print progress every 120 seconds.
 
-Generate the input file for a whole Hugging Face repo with the HF API
-(skip thumbnails and docs):
+Make input file for whole Hugging Face repo with HF API (skip thumbnails, docs):
 
 ```bash
 curl -fsSL 'https://huggingface.co/api/models/freriadoc/Qwen3.8-Flash-Next-Avalon-GGUF' \
@@ -80,11 +69,9 @@ pgrep -x aria2c   # prints a PID while running; no output when done
 du -sh /home/galmost/models/repo
 ```
 
-Do not use `pgrep -f aria2c` to check liveness — it also matches the shell
-command that contains the string. Use `pgrep -x aria2c`.
+Do not use `pgrep -f aria2c` to check alive. It matches shell command too. Use `pgrep -x aria2c`.
 
-Done when the target directory reaches the expected total size and no
-`*.aria2` control files remain:
+Done when target dir has expected size and no `*.aria2` files remain:
 
 ```bash
 find /home/galmost/models/repo -name '*.aria2' | wc -l   # 0 means complete
@@ -92,37 +79,28 @@ find /home/galmost/models/repo -name '*.aria2' | wc -l   # 0 means complete
 
 ## 5. Hugging Face notes
 
-- HF caps aggregate per-IP bandwidth (observed ~11 MB/s on a much faster
-  link). Raising `-j`/`-x` beyond ~16 does not help; the cap is per IP, not
-  per connection.
-- `hf download` (used by many installers) is single-stream without
-  `hf_transfer` and can be 3-4x slower than aria2c against HF. If an installer
-  already placed complete files in its model dir, `hf download --local-dir`
-  skips files whose size matches the remote, so mixing both is safe.
-- Interrupted aria2 files are re-downloaded from scratch by `hf download`
-  unless the size matches; complete them with aria2 first.
+- HF caps bandwidth per IP (~11 MB/s seen). Raising `-j`/`-x` past ~16 no help. Cap is per IP.
+- `hf download` single stream without `hf_transfer`. 3-4x slower than aria2c on HF. If installer placed complete files, `hf download --local-dir` skips files with matching size. Mixing both safe.
+- Interrupted aria2 files: `hf download` re-downloads from scratch unless size matches. Finish with aria2 first.
 
 ## Troubleshooting
 
 ### Download stalls at 0 B/s or "resource unavailable"
-The server may reject too many connections. Lower `-x`/`-s`:
+Server reject too many connections. Lower `-x`/`-s`:
 
 ```bash
 aria2c -x 4 -s 4 -c <url>
 ```
 
 ### Resume does not work / file restarts
-The `.aria2` control file was deleted, or the server ignores range requests
-(`--allow-overwrite=true` then redownloads). Keep control files until the
-download finishes; check server support with:
+`.aria2` file deleted or server ignore range requests (`--allow-overwrite=true` then redownload). Keep control files until done. Check server support:
 
 ```bash
 curl -sI https://example.com/bigfile.iso | grep -i accept-ranges
 ```
 
 ### `out=` subdirectory not created
-aria2 creates parent directories for `out=` paths automatically; if it
-fails, create them first: `mkdir -p <dir>/MTP`.
+aria2 makes parent dirs for `out=` auto. If fail, make first: `mkdir -p <dir>/MTP`.
 
 ## Source
 
