@@ -226,6 +226,26 @@ journalctl --user -u qwen-coder.service -f
 
 Then select the model in Vibe: `vibe --model qwen2.5-coder`. Smoke test:
 `curl -fsS http://127.0.0.1:8081/v1/models`.
+=======
+## 6. Model recovery (models are not backed up)
+
+`~/Avalon-models` is 134G — too big for the off-box backup. Recovery is:
+restore the home folder from the gark_home git snapshots (configs, wrappers,
+server scripts), then re-download the models and verify against the manifest:
+
+```bash
+# manifest with sha256 per GGUF, committed in this folder:
+cat models-manifest.sha256        # 39 files under ~/Avalon-models/<repo>/
+# re-download (Hugging Face repos named after the folders, e.g.
+#   freriadoc/Qwen3.8-Flash-Next-Avalon-GGUF, Qwen/Qwen2.5-Coder-7B-Instruct-GGUF)
+# or re-run the Avalon installer, which downloads and SHA-256-verifies itself:
+avalon-server -c 65536            # after reinstall, first run fetches missing files
+# verify:
+cd ~/Avalon-models && sha256sum -c ~/git/structured-kb/computer/debian/ai/amd/avalon/models-manifest.sha256
+```
+
+If a sha256 mismatches, delete that file and re-download; do not serve a model
+that fails verification.
 
 ## Troubleshooting
 
