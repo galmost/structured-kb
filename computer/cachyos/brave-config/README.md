@@ -33,7 +33,12 @@ GUI: `brave://settings/appearance` → Mode → Dark.
 
 Keep **Shields ON** — privacy, not bloat.
 
-## 3. Versioned settings file
+## 3. Extensions in use
+
+- `oboonakemofpalcgghocfoadofidjkkk` — KeePassXC-Browser (login autofill; see [../keepassxc/](../keepassxc/README.md))
+- `cimiefiiaegbelhefglklhhakcgmhkai` — Plasma Integration (KDE): MPRIS media controls, native download notifications, portal open-with dialogs. Keep on Plasma.
+
+## 4. Versioned settings file
 
 Full profile `Preferences` snapshot lives beside this note:
 [`Preferences.json`](Preferences.json) (source of truth, committed here).
@@ -41,7 +46,7 @@ Restore: close Brave, copy over
 `~/.config/BraveSoftware/Brave-Browser/Default/Preferences`.
 Scanned for credential-like keys before commit — none (only timestamps/hashes).
 
-## 4. Verify
+## 5. Verify
 
 ```bash
 python3 -c "
