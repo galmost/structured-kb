@@ -1,6 +1,6 @@
 # Caveman mode for pi (Linux, any distro)
 
-Portable install of [v2nic/pi-caveman](https://github.com/v2nic/pi-caveman) — makes the pi coding agent speak caveman, cutting ~75% of output tokens while keeping full technical accuracy. Works on any distro with pi installed; no host-specific dependencies, no API keys beyond pi's own auth.
+Portable install of [v2nic/pi-caveman](https://github.com/v2nic/pi-caveman) — makes the pi coding agent speak caveman, cutting ~75% of output tokens while keeping full technical accuracy. Works on any distro with pi installed; no host-specific dependencies, no API keys beyond pi's own auth. This note's path mirrors the pi skill path (`~/.pi/agent/skills/caveman/`).
 
 Provides both:
 
