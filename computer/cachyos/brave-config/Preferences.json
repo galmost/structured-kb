@@ -324,9 +324,9 @@
    ]
   },
   "ai_chat": {
+   "context_menu_enabled": false,
    "enabled": false,
-   "show_toolbar_button": false,
-   "context_menu_enabled": false
+   "show_toolbar_button": false
   },
   "brave_ads": {
    "grace_period": "259200000000",
@@ -720,9 +720,10 @@
    "show_background_image": false,
    "show_card": false,
    "show_news": false,
+   "show_rewards": false,
    "show_stats": false,
-   "show_top_sites": false,
-   "hide_all_widgets": true
+   "show_together": false,
+   "show_top_sites": false
   },
   "news": {
    "enabled": false
@@ -894,7 +895,9 @@
     "payment_id": ""
    },
    "tos_version": 2,
-   "version": 16
+   "version": 16,
+   "show_brave_rewards_button_in_location_bar": false,
+   "inline_tip_buttons_enabled": false
   },
   "search": {
    "default_version": 35
@@ -905,12 +908,12 @@
    "last_used_built_in_item_type": 7
   },
   "stats": {
-   "ads_blocked": "439",
-   "bandwidth_saved_bytes": "8088009",
+   "ads_blocked": "479",
+   "bandwidth_saved_bytes": "8253754",
    "daily_saving_predictions_bytes": [
     {
      "day": 1795644000.0,
-     "value": 8088009.0
+     "value": 8253754.0
     }
    ]
   },
@@ -967,7 +970,9 @@
     ]
    },
    "keyrings": {},
-   "localhost_networks_migrated": true
+   "localhost_networks_migrated": true,
+   "should_show_wallet_suggestion_badge": false,
+   "show_wallet_icon_on_toolbar": false
   },
   "web_discovery": {
    "cta_state": {
@@ -1044,7 +1049,7 @@
    "is_active": 0,
    "keyword": ":br",
    "last_modified": "0",
-   "last_visited": "13440128746095104",
+   "last_visited": "13440128814303916",
    "logo_url": "",
    "new_tab_url": "",
    "originating_url": "",
@@ -1086,7 +1091,7 @@
    "is_active": 0,
    "keyword": ":br",
    "last_modified": "0",
-   "last_visited": "13440128746095104",
+   "last_visited": "13440128814303916",
    "logo_url": "",
    "new_tab_url": "",
    "originating_url": "",
@@ -1381,7 +1386,7 @@
     "incognito_content_settings": [],
     "incognito_preferences": {},
     "last_loaded_browser_version": "158.1.100.59",
-    "last_update_time": "13440128740391284",
+    "last_update_time": "13440128807891710",
     "location": 5,
     "manifest": {
      "content_security_policy": "script-src 'self' blob: filesystem: chrome://brave-resources chrome://resources chrome://webui-test; object-src * blob: externalfile: file: filesystem: data:",
@@ -1458,7 +1463,7 @@
     "incognito_content_settings": [],
     "incognito_preferences": {},
     "last_loaded_browser_version": "158.1.100.59",
-    "last_update_time": "13440128740392228",
+    "last_update_time": "13440128807892786",
     "location": 5,
     "manifest": {
      "content_scripts": [
@@ -1876,7 +1881,7 @@
  "https_only_mode_enabled": false,
  "https_upgrade_navigations": {
   "2026-11-25": 13,
-  "2026-11-26": 97
+  "2026-11-26": 107
  },
  "in_product_help": {
   "new_badge": {
@@ -1926,7 +1931,7 @@
   "recent_session_start_times": [
    "13440122613863447"
   ],
-  "session_last_active_time": "13440128740398566",
+  "session_last_active_time": "13440128807900221",
   "session_number": 2,
   "session_start_time": "13440122613863447",
   "shown_notices": [
@@ -1950,7 +1955,7 @@
   "selected_languages": "en-US,en"
  },
  "language_model_counters": {
-  "en": 50,
+  "en": 51,
   "es": 1
  },
  "login_detection": {
@@ -2476,12 +2481,21 @@
       }
      },
      "chrome://rewards.top-chrome/,*": {
-      "last_modified": "13440128647588113",
+      "last_modified": "13440128820195349",
       "setting": {
-       "lastEngagementTime": 1.344012864758808e+16,
+       "lastEngagementTime": 1.344012882019531e+16,
        "lastShortcutLaunchTime": 0.0,
-       "pointsAddedToday": 4.5,
-       "rawScore": 4.5
+       "pointsAddedToday": 6.0,
+       "rawScore": 6.0
+      }
+     },
+     "chrome://wallet-panel.top-chrome/,*": {
+      "last_modified": "13440128811373280",
+      "setting": {
+       "lastEngagementTime": 1.3440128811373256e+16,
+       "lastShortcutLaunchTime": 0.0,
+       "pointsAddedToday": 3.0,
+       "rawScore": 3.0
       }
      },
      "chrome://welcome/,*": {
@@ -2548,12 +2562,12 @@
       }
      },
      "https://github.com:443,*": {
-      "last_modified": "13440128654988209",
+      "last_modified": "13440128835439946",
       "setting": {
-       "lastEngagementTime": 1.3440128654988166e+16,
+       "lastEngagementTime": 1.3440128835439902e+16,
        "lastShortcutLaunchTime": 0.0,
-       "pointsAddedToday": 11.399999999999997,
-       "rawScore": 11.399999999999997
+       "pointsAddedToday": 12.599999999999996,
+       "rawScore": 12.599999999999996
       }
      },
      "https://huggingface.co:443,*": {
@@ -2621,7 +2635,7 @@
   },
   "exit_type": "SessionEnded",
   "family_member_role": "not_in_family",
-  "last_engagement_time": "13440128654988166",
+  "last_engagement_time": "13440128835439902",
   "last_time_obsolete_http_credentials_removed": 1795649139.289209,
   "last_time_password_store_metrics_reported": 1795649043.825514,
   "managed": {
@@ -2713,8 +2727,8 @@
     "show_home_button_encrypted_hash": "djExeHvShLcSNn7Q5w3fR+MOgjgBTtXmwkSTYRzFk8D5uYsmKRwVEU8LRTQIkoCwJ7Wm"
    },
    "default_search_provider_data": {
-    "template_url_data": "0F1EF0E0B4908FF9B91AB689451463C38A689C61A997EA6EB83BCE2CF4212CA8",
-    "template_url_data_encrypted_hash": "djExV7rWpQowMv8v2Beywxd1ZoodzgTkvkjfoxntWsYZ9v9+HIs9PL5vmCRXJux4ZOsS"
+    "template_url_data": "C93B6FF3B8D6B25A781D57F7AB1DBA49B62B4D0D6203F2A0F24169A736313A63",
+    "template_url_data_encrypted_hash": "djExi/8zXCO4uZePkkAcehFEPjl1oNBFg7nD+J9q0vzsoaNYiEVsiq4jfrIVdS3RN8kT"
    },
    "enterprise_signin": {
     "policy_recovery_token": "7D3124ECAF7E96407EB65EAF5A43B02C7EE5F2D4A9FA38A9F371F9E1B74D6383",
@@ -2729,14 +2743,14 @@
     },
     "settings": {
      "cimiefiiaegbelhefglklhhakcgmhkai": "1390E542CBE8365646198A0BB5CA86E2B5285FA37F700F3A5F6BDFE9DE6C6AE0",
-     "mhjfbmdgcfjbbpaeojofohoefgiehjai": "C7B5250DA82859E82AE98503D3A50174864BBC6DE7D868DA356438FA930066CA",
-     "mnojpmjdmbbfmejpflffifhffcmidifd": "1D4AB4748B46F82BD1BA851D92C3DDBFAFF850E0FA33991C7A3B37270D020F69",
+     "mhjfbmdgcfjbbpaeojofohoefgiehjai": "3A0359BE4F3C43360C82C3ECE585BFF4108CACAA1A7F765DE6B156716EF97EDA",
+     "mnojpmjdmbbfmejpflffifhffcmidifd": "3A909F8B0B881835729A66D43F2957C0240552EF45FAF19E1706BDFF6801E7BA",
      "oboonakemofpalcgghocfoadofidjkkk": "F5F891D655C479D66FD577C9626FA55D9830080C7C3D9E7159B4F5A9AFDB905D"
     },
     "settings_encrypted_hash": {
      "cimiefiiaegbelhefglklhhakcgmhkai": "djEx2wzGIFgs9J5ulZEowB01boX6ghBt54xFMvhbvs3yOl6ugzYG1iL4C7q3EQkJj8hG",
-     "mhjfbmdgcfjbbpaeojofohoefgiehjai": "djExox8nVZalNLf3c53WUMANk+Uf1bV0AcCbWjsnlRQ8hDpJ58e9pQJUH4PM8kVNO/YW",
-     "mnojpmjdmbbfmejpflffifhffcmidifd": "djEx3+x4C14xIPl74q+bfrnjdTlEN83afGhYT7J6wRvnPdaQYm4eXYs6t4ZL5+J/3TxI",
+     "mhjfbmdgcfjbbpaeojofohoefgiehjai": "djExpvDpphJODEQEFyh81kHZgG0h2MHp3WSB2Iz0Uy6G5KqYgfW5BJh2Xi5us+sXHJO+",
+     "mnojpmjdmbbfmejpflffifhffcmidifd": "djExWuY2HMGJEMqOVGW73qt1Xnuuf/qZhn1sRGMDwXJdmF3/LgGti6V0/mELJSwIrdaR",
      "oboonakemofpalcgghocfoadofidjkkk": "djEx0ifKBVg1eArDPTd456rDeZ7pM8bb2MB3ZNdHkumN6iWfYOpSSQFT/hkRHHnVxU0O"
     },
     "ui": {
@@ -2772,8 +2786,8 @@
     "incidents_sent": "569707D9A4676B72F48BE92B740BE3EF895419C8A646F1AE1BA70BD9C3B41845",
     "incidents_sent_encrypted_hash": "djExPWqA0Ghggp115Lb1vipil7uuwM1kZIyYTWZZ6nYZKbR9OqXh4oeNTua5GFANr2QM"
    },
-   "schedule_to_flush_to_disk": "A67138B46A8F29A0C78178FCEE98F78E1F558C59E8FED4FA2F090CAA2C68F877",
-   "schedule_to_flush_to_disk_encrypted_hash": "djExT4iipQvE8vONXbVMSaOFFzWp5vv7hJPzum6YENjQO4+YFrU4QnFjvLXqh+sfSeH9",
+   "schedule_to_flush_to_disk": "F80BBD50406DA66CBA8A4628BAABDA0E488020324C9F477537DB27432E1587E4",
+   "schedule_to_flush_to_disk_encrypted_hash": "djExnPMlrtWI8hPCgtRMBvrtMxUEin7pGHB6FsYYu90Y+n6cczAN/Gezq925wmJQnBKg",
    "search_provider_overrides": "1E1EBA3A4DC28A23BEFCF6ED5D71CE71E9814DD587A305F6B14F72E834AF75DD",
    "search_provider_overrides_encrypted_hash": "djExmi4GYxplmSHUUnEFUmw/IDG9/hSLd5MiLvEJZzzDtbrQgJadf/L9yhsXntOg2SH3",
    "session": {
@@ -2783,7 +2797,7 @@
     "startup_urls_encrypted_hash": "djExQ0SsbgfbSNeEPAAYRIEa/JK5AqzglxqEH/yWoprnDg45zAK6hgPYrxE6uTHZVMK3"
    }
   },
-  "super_encrypted_hash": "djExLgaTZNnmzfjqoGKS/BGMv4VwGGOmTyvhxoqYrceIma5Rrk8QSuKZy+ZBf1BGGEf8"
+  "super_encrypted_hash": "djEx8VcqaDWsUQTOEQ1rzJvSiNbJDn2zMIWMuVUqpTLMEQvMjF8fHChE/4zXaR5h2bNF"
  },
  "safebrowsing": {
   "event_timestamps": {
@@ -2808,7 +2822,7 @@
  "savefile": {
   "default_directory": "/home/galmost/Downloads"
  },
- "schedule_to_flush_to_disk": "13440128740861361",
+ "schedule_to_flush_to_disk": "13440128808361504",
  "search": {
   "suggest_enabled": false
  },
@@ -2902,6 +2916,32 @@
     "first_session_service": true,
     "tab_count": 12,
     "time": "13440128783232745",
+    "type": 2,
+    "window_count": 1
+   },
+   {
+    "crashed": false,
+    "time": "13440128807885016",
+    "type": 0
+   },
+   {
+    "restore_browser": true,
+    "synchronous": true,
+    "time": "13440128807902526",
+    "type": 5
+   },
+   {
+    "errored_reading": false,
+    "tab_count": 12,
+    "time": "13440128808119965",
+    "type": 1,
+    "window_count": 1
+   },
+   {
+    "did_schedule_command": true,
+    "first_session_service": true,
+    "tab_count": 12,
+    "time": "13440128841042153",
     "type": 2,
     "window_count": 1
    }
@@ -3006,14 +3046,14 @@
     "cohortname": "",
     "dlrc": 7268,
     "installdate": 7268,
-    "pf": "cde713ca-bdab-4137-9202-1c4d4129bd8b"
+    "pf": "8a797dfc-672e-4905-a9a6-ed491621facf"
    },
    "oboonakemofpalcgghocfoadofidjkkk": {
     "cohort": "1::",
     "cohortname": "",
     "dlrc": 7268,
     "installdate": 7268,
-    "pf": "67d53ac1-ce46-4842-9e76-1a9d350ade74"
+    "pf": "881afeb4-2442-42be-9abd-48ff0c47ce8a"
    }
   }
  },
