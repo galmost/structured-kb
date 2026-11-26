@@ -2,6 +2,8 @@
 
 User skills for [pi coding agent](README.md) live in `skills/` folder: `~/.pi/agent/skills/<name>/SKILL.md` (override with `PI_CODING_AGENT_DIR`). Pi shows skill name/description at startup, loads full `SKILL.md` only when task matches. Force with `/skill:<name>`, pick up edits with `/reload`. Project alt: `.pi/skills/` in trusted repo.
 
+For the `caveman` voice skill on **any** pi install, prefer the portable package — see [../../linux/ai/pi-caveman/](../../linux/ai/pi-caveman/README.md) (`pi install git:github.com/v2nic/pi-caveman`, provides `/caveman` + `/skill:caveman`). The manual Vibe-port below is only needed for `caveman-compress` on this host.
+
 Host installs two skills, ported from Vibe copies under `~/.vibe/skills/`, commands changed from `/caveman...` to `/skill:caveman...`:
 
 | skill | dir | what it does |
