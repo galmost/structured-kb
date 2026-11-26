@@ -26,6 +26,8 @@ No strict order. Every item independent.
 | GitHub CLI `gh` | — | gh 2.105.0, authed via keyring |
 | pi coding agent + caveman skill | [../linux/ai/pi/skills/caveman/](../linux/ai/pi/skills/caveman/README.md) | `pi install git:github.com/v2nic/pi-caveman` |
 | Daily home git snapshot | [home-git-snapshot/](home-git-snapshot/README.md) | `gcachydeck-home-snapshot.timer` active, pushes to Bitbucket main |
+| KeePassXC + Brave integration | [keepassxc/](keepassxc/README.md) | 2.8.0, `[Browser] Enabled=true`, KeePassXC-Browser ext in Brave |
+| Digi Storage client | [digistorage/](digistorage/README.md) | `~/.digistorage-dist/storagegui`, desktop + autostart entries |
 
 ## 3. Why a cachyos section
 
