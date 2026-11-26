@@ -20,14 +20,16 @@ GUI: `brave://settings/appearance` → Mode → Dark.
 |---|---|
 | Rewards / BAT | `brave.rewards.enabled` |
 | Wallet / Web3 | `brave.wallet.enabled` |
-| Leo AI chat | `brave.ai_chat.enabled` |
+| Leo AI chat | `brave.ai_chat.enabled` + `show_toolbar_button` + `context_menu_enabled` |
 | Brave Talk | `brave.brave_together.enabled` |
 | News | `brave.news.enabled` |
 | VPN | `brave.vpn.enabled` |
 | Sidebar | `brave.sidebar.enabled` |
+| Rewards UI | `brave.rewards.enabled` + `show_brave_rewards_button_in_location_bar` + `inline_tip_buttons_enabled` |
+| Wallet UI | `brave.wallet.enabled` + `show_wallet_icon_on_toolbar` + `should_show_wallet_suggestion_badge` |
 | Background apps | `background_mode.enabled` |
 | Search suggestions | `search.suggest_enabled` |
-| NTP widgets/background | `brave.new_tab_page.show_*` |
+| NTP widgets (incl. Leo card) | `brave.new_tab_page.hide_all_widgets` + `show_*` |
 
 Keep **Shields ON** — privacy, not bloat.
 
