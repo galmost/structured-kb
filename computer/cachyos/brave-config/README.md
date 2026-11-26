@@ -31,7 +31,15 @@ GUI: `brave://settings/appearance` → Mode → Dark.
 
 Keep **Shields ON** — privacy, not bloat.
 
-## 3. Verify
+## 3. Versioned settings file
+
+Full profile `Preferences` snapshot lives beside this note:
+[`Preferences.json`](Preferences.json) (source of truth, committed here).
+Restore: close Brave, copy over
+`~/.config/BraveSoftware/Brave-Browser/Default/Preferences`.
+Scanned for credential-like keys before commit — none (only timestamps/hashes).
+
+## 4. Verify
 
 ```bash
 python3 -c "
