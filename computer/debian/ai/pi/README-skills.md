@@ -2,7 +2,7 @@
 
 User skills for [pi coding agent](README.md) live in `skills/` folder: `~/.pi/agent/skills/<name>/SKILL.md` (override with `PI_CODING_AGENT_DIR`). Pi shows skill name/description at startup, loads full `SKILL.md` only when task matches. Force with `/skill:<name>`, pick up edits with `/reload`. Project alt: `.pi/skills/` in trusted repo.
 
-For the `caveman` voice skill on **any** pi install, prefer the manual JuliusBrussee skills installation — see [../../../linux/ai/pi/skills/caveman/](../../../linux/ai/pi/skills/caveman/README.md). The legacy v2nic package is available as fallback.
+For the `caveman` voice skill on **any** pi install, prefer the manual JuliusBrussee skills installation — see [../../../linux/pi/caveman/](../../../linux/pi/caveman/README.md). The legacy v2nic package is available as fallback.
 
 Host installs two skills, ported from Vibe copies under `~/.vibe/skills/`, commands changed from `/caveman...` to `/skill:caveman...`:
 
@@ -26,7 +26,7 @@ Host installs two skills, ported from Vibe copies under `~/.vibe/skills/`, comma
 mkdir -p ~/.agents/skills
 cd ~/.agents/skills
 # Clone and extract skills from JuliusBrussee/caveman
-# (see ../../../linux/ai/pi/skills/caveman/README.md for full instructions)
+# (see ../../../linux/pi/caveman/README.md for full instructions)
 ```
 
 ### Option B: Legacy Vibe Skills (Fallback)

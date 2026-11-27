@@ -4,11 +4,13 @@ Set up JuliusBrussee/caveman for ultra-compressed responses in Pi coding agent.
 
 ## 1. Prerequisites
 
-- Pi coding agent installed (see [Pi Coding Agent Setup for Linux](../../linux/pi/) or [Arch-specific guide](../../arch/pi/))
+- Pi coding agent installed (see [Pi Coding Agent Setup for Linux](../) or [Arch-specific guide](../../arch/pi/))
 - Node.js 22.13+ (for caveman CLI tools, optional)
 - Git
 
 ## 2. Install JuliusBrussee/caveman Skills
+
+### Option A: Manual Skills Installation (Recommended)
 
 Clone JuliusBrussee/caveman repository and extract skills:
 
@@ -28,6 +30,19 @@ cp -r skills/caveman-compress ~/.agents/skills/caveman-compress
 # Clean up
 rm -rf ~/.pi/agent/skills/caveman-source
 ```
+
+### Option B: Legacy v2nic Package (Fallback)
+
+If manual installation fails, use the v2nic package as fallback:
+
+```bash
+pi install git:github.com/v2nic/pi-caveman
+pi list          # shows: git:github.com/v2nic/pi-caveman
+```
+
+This clones the package into `~/.pi/agent/git/github.com/v2nic/pi-caveman/` and adds it to `packages` in `~/.pi/agent/settings.json`. Skills/extensions from the package are discovered automatically; restart pi or `/reload` after install.
+
+Temporary try without installing: `pi -e ~/.pi/agent/git/github.com/v2nic/pi-caveman/extensions/caveman`.
 
 ## 3. Configure Pi Settings
 
@@ -64,6 +79,12 @@ Test caveman modes:
 /caveman-compress <file>
 /caveman status
 /stop caveman
+```
+
+For v2nic package installation:
+```bash
+pi list | grep pi-caveman
+ls ~/.pi/agent/git/github.com/v2nic/pi-caveman/skills/caveman/SKILL.md
 ```
 
 ## 6. Commands Reference
@@ -119,11 +140,17 @@ Use full sentences for:
 - Anything persisted outside chat (code, commits, docs)
 - Questions to user
 
+## 10. Troubleshooting
+
+- Skill not visible after install — restart pi or run `/reload`; skills path must be in `~/.pi/agent/settings.json` under `skills`.
+- Issues with v2nic package — see [v2nic/pi-caveman](https://github.com/v2nic/pi-caveman) for fallback-specific issues.
+
 ## See Also
 
-- [Pi Caveman CLI Integration Assessment](../pi-caveman-cli/) - Assessment of using `@caveman-ai/cli` with Pi
+- [Pi Caveman CLI Integration Assessment](./cli/) - Assessment of using `@caveman-ai/cli` with Pi
 
 ## Source
 
-- [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman)
+- [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman) (primary)
+- [v2nic/pi-caveman](https://github.com/v2nic/pi-caveman) (legacy fallback)
 - [Pi Coding Agent](https://github.com/earendil-works/pi-coding-agent)
