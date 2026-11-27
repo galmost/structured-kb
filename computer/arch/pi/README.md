@@ -181,8 +181,8 @@ pi models
 
 ## 9. See Also
 
-- [Pi Caveman Setup](../../pi/pi-caveman/) - Caveman voice integration
-- [Pi Caveman CLI Assessment](../../pi/pi-caveman-cli/) - CLI vs Skills comparison
+- [Pi Caveman Setup](../linux/pi/caveman/) - Caveman voice integration
+- [Pi Caveman CLI Assessment](../linux/pi/caveman/cli/) - CLI vs Skills comparison
 
 ## Source
 
