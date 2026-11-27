@@ -2,7 +2,7 @@
 
 User skills for [pi coding agent](README.md) live in `skills/` folder: `~/.pi/agent/skills/<name>/SKILL.md` (override with `PI_CODING_AGENT_DIR`). Pi shows skill name/description at startup, loads full `SKILL.md` only when task matches. Force with `/skill:<name>`, pick up edits with `/reload`. Project alt: `.pi/skills/` in trusted repo.
 
-For the `caveman` voice skill on **any** pi install, prefer the portable package — see [../../../linux/ai/pi/skills/caveman/](../../../linux/ai/pi/skills/caveman/README.md) (`pi install git:github.com/v2nic/pi-caveman`, provides `/caveman` + `/skill:caveman`). The manual Vibe-port below is only needed for `caveman-compress` on this host.
+For the `caveman` voice skill on **any** pi install, prefer the manual JuliusBrussee skills installation — see [../../../linux/ai/pi/skills/caveman/](../../../linux/ai/pi/skills/caveman/README.md). The legacy v2nic package is available as fallback.
 
 Host installs two skills, ported from Vibe copies under `~/.vibe/skills/`, commands changed from `/caveman...` to `/skill:caveman...`:
 
@@ -19,6 +19,17 @@ Host installs two skills, ported from Vibe copies under `~/.vibe/skills/`, comma
 - `caveman-compress`: Python 3 (stdlib only for the `openai-compat` provider) + Mistral API key (same as pi, from `~/.pi/agent/auth.json` — section 3). Other providers (`claude` CLI, Anthropic API, `opencode`, local) work upstream — see `SECURITY.md` in skill dir.
 
 ## 2. Install
+
+### Option A: JuliusBrussee Skills (Recommended)
+
+```bash
+mkdir -p ~/.agents/skills
+cd ~/.agents/skills
+# Clone and extract skills from JuliusBrussee/caveman
+# (see ../../../linux/ai/pi/skills/caveman/README.md for full instructions)
+```
+
+### Option B: Legacy Vibe Skills (Fallback)
 
 ```bash
 mkdir -p ~/.pi/agent/skills
@@ -60,7 +71,12 @@ API key never on disk: `~/.zshrc` exports `CAVEMAN_COMPRESS_API_KEY` reading `mi
 ## 5. Verify
 
 ```bash
+# For JuliusBrussee skills:
+ls ~/.agents/skills/caveman-caveman/SKILL.md ~/.agents/skills/caveman-compress/SKILL.md
+
+# For legacy Vibe skills:
 ls ~/.pi/agent/skills/caveman/SKILL.md ~/.pi/agent/skills/caveman-compress/SKILL.md
+
 pi -p 'Say exactly: pong' --no-session        # skills listed in startup diagnostics
 # interactive: /skill:caveman                  -> terse replies until "stop caveman"
 # interactive: /skill:caveman-compress ~/git/structured-kb/AGENTS.md
@@ -68,7 +84,7 @@ pi -p 'Say exactly: pong' --no-session        # skills listed in startup diagnos
 
 ## Troubleshooting
 
-- Not listed at startup — wrong dir: must be `~/.pi/agent/skills/<name>/SKILL.md`, not `~/.pi/agent/skills/<name>.md`; run `/reload` after move.
+- Not listed at startup — wrong dir: must be `~/.pi/agent/skills/<name>/SKILL.md` or `~/.agents/skills/<name>/SKILL.md`, not `~/.pi/agent/skills/<name>.md`; run `/reload` after move.
 - `caveman-compress` HTTP 401 — `CAVEMAN_COMPRESS_API_KEY` empty: new shell (key from `~/.zshrc`/`~/.pi/agent/auth.json`) or `pi auth login mistral --api-key`.
 - `caveman-compress` HTTP 422 `chat_template_kwargs` — Mistral patch missing in `scripts/compress.py`; re-copy skill dir.
 - `caveman-compress` refuses file — extension not in allowlist (.md, .txt, .typ, .tex, extensionless) or name looks secret; pick different file.
@@ -78,7 +94,8 @@ pi -p 'Say exactly: pong' --no-session        # skills listed in startup diagnos
 
 - [Pi docs — Skills](https://pi.dev/docs/latest/skills)
 - [Pi docs — Configuration (agent dir layout)](https://pi.dev/docs/latest/configuration)
-- Upstream Vibe skill copies: `~/.vibe/skills/caveman/`, `~/.vibe/skills/caveman-compress/`
+- JuliusBrussee skills: [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman)
+- Legacy Vibe skill copies: `~/.vibe/skills/caveman/`, `~/.vibe/skills/caveman-compress/`
 - [Pi harness note in this repo](README.md)
 - [Avalon note in this repo](../amd/avalon/README.md)
 - [Mistral note in this repo](../mistral/README.md)
