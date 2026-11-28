@@ -1,0 +1,23 @@
+#!/bin/bash
+set -euo pipefail
+
+SNAP_DIR="/.snapshots/agent"
+SNAP_NAME="home-$(date +%F-%H%M)"
+
+mkdir -p "$SNAP_DIR"
+
+btrfs subvolume snapshot /home "$SNAP_DIR/$SNAP_NAME"
+
+# Get all home-* snapshots sorted by subvolume ID (oldest first)
+# btrfs subvolume list already sorts by ID ascending
+mapfile -t all_snaps < <(btrfs subvolume list "$SNAP_DIR" | awk '$NF ~ /home-/ {print $NF}')
+
+# Extract just the filename part (remove "agent/" prefix)
+for i in "${!all_snaps[@]}"; do
+    all_snaps[i]="${all_snaps[i]#agent/}"
+done
+
+# Delete all except last 7
+for ((i=0; i<${#all_snaps[@]}-7; i++)); do
+    btrfs subvolume delete "$SNAP_DIR/${all_snaps[i]}" || echo "WARN: delete failed $SNAP_DIR/${all_snaps[i]}" >&2
+done
