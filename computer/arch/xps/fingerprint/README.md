@@ -29,7 +29,7 @@ sudo systemctl enable --now fprintd
 
 ## 5. Enroll Fingerprint
 Enroll your right index finger (or follow prompts for others):
-```bash>
+```bash
 fprintd-enroll
 ```
 *Keep swiping your finger until it says "Enrollment completed".*

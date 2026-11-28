@@ -56,4 +56,4 @@ Validation fail → original untouched, re-run.
 
 - [JuliusBrussee/caveman-compress](https://github.com/JuliusBrussee/caveman/tree/main/skills/caveman-compress)
 - [Pi Caveman Setup](../README.md)
-- [Mistral note](../../../debian/ai/mistral/README.md)
+- [Mistral note](../../../../debian/ai/mistral/README.md)

@@ -152,32 +152,13 @@ pi -p 'Reply with exactly: pong'    # after `pi auth login mistral`: uses defaul
 
 ## 7. Caveman skill (terse output)
 
-`~/AGENTS.md` load `caveman` skill at start of every pi run, so pi answer terse until user say "stop caveman" or "normal mode". Pi discover user skills from `<agent-dir>/skills/`, i.e. `~/.pi/agent/skills/` (see section 4). Install skill as directory with `SKILL.md`:
+Install per [README-skills.md](README-skills.md) and load it every run by adding to `~/AGENTS.md`:
 
-```bash
-mkdir -p ~/.pi/agent/skills/caveman
-# write ~/.pi/agent/skills/caveman/SKILL.md
+```markdown
+- Load the `caveman` skill; answer terse until the user says "stop caveman" or "normal mode".
 ```
 
-`SKILL.md` is Agent Skills form of caveman voice rules (answer first, no ceremony, payload verbatim, one idea per sentence), commands adapted to pi: `/skill:caveman` instead of `/caveman`, so `/skill:caveman status`, `/skill:caveman ultra` etc. work. Source copy at `~/.vibe/skills/caveman/SKILL.md` (Vibe harness). Pi advertise skill by name and description at startup, load full instructions on demand; force with `/skill:caveman`, reload after edits with `/reload`.
-
-Track skill in home_config by extend `.pi` allowlist in `~/.gitignore` (section 6):
-
-```bash
-# ~/.gitignore
-!.pi/agent/skills/
-!.pi/agent/skills/**
-```
-
-Verify:
-
-```bash
-ls ~/.pi/agent/skills/caveman/SKILL.md
-pi -p 'Say exactly: pong' --no-session   # skill listed in startup diagnostics
-# in an interactive session: /skill:caveman  -> terse replies from then on
-```
-
-See [README-skills.md](README-skills.md) for full user-skills layout, including `caveman-compress` skill.
+Pi advertises the skill at startup, loads it on demand, forces it with `/skill:caveman`, reloads edits with `/reload`.
 
 ## Troubleshooting
 

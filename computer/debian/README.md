@@ -1,12 +1,12 @@
 # Debian Setup Index (Debian 13 "trixie")
 
-Target state for Debian desktop/dev box. Notes from this folder and shared notes in `computer/linux/` and `ide/zed/`. Each topic has folder with commands, check, fix. This file is map and checklist.
+Target state for Debian desktop/dev box. Notes from this folder plus shared notes in `computer/linux/` and `ide/zed/`. Each topic has commands, check, fix. This file is the map and checklist.
 
-No strict order. Every item independent. Prerequisites first, then anything else.
+No strict order; every item independent. Prerequisites first.
 
-## Prerequisites (base)
+## 0. Prerequisites (base)
 
-Run once on fresh install as root. Use `pkexec` not `sudo` because `sudo` ask password in non-interactive shell, `pkexec` use polkit:
+Run once on fresh install as root. Use `pkexec` not `sudo` — `sudo` asks a password in non-interactive shells, `pkexec` authenticates via polkit:
 
 ```bash
 pkexec apt install -y sudo curl gnupg git ca-certificates
@@ -29,12 +29,12 @@ Verified here: curl 8.14.1, gnupg 2.4.7, git 2.47.3, build-essential 12.12, pkex
 | aria2c (segmented downloads) | [aria2c/](aria2c/README.md) | aria2 1.37.0 |
 | Wake-on-LAN | [wake-on-lan/](wake-on-lan/README.md) | ethtool 6.14.2, `Wake-on: g` and NetworkManager `802-3-ethernet.wake-on-lan: magic` on `enp11s0` |
 
-Not in set: `ai/` notes. `ai/amd/avalon/` and `ai/mistral/` are ROCm/llama.cpp stack and Vibe config for AMD RDNA3/4 render hosts, not this box.
+Not in set: `ai/` notes. `ai/amd/avalon/` and `ai/mistral/` are the ROCm/llama.cpp stack and Vibe config for AMD RDNA3/4 render hosts, not this box.
 
 ## Applying shared configuration
 
-- Shell: follow [../linux/zsh/](../linux/zsh/README.md) after install zsh (see [zsh/](zsh/README.md) section 3).
-- Zed: copy repo config over local one, it is source of truth:
+- Shell: follow [../linux/zsh/](../linux/zsh/README.md) after installing zsh (see [zsh/](zsh/README.md) section 3).
+- Zed: copy repo config over local one — repo is source of truth:
 
 ```bash
 mkdir -p ~/.config/zed

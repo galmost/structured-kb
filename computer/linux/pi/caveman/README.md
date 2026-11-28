@@ -1,76 +1,39 @@
 # Pi Caveman Setup (JuliusBrussee/caveman)
 
-Set up JuliusBrussee/caveman for ultra-compressed responses in Pi coding agent.
+Ultra-compressed responses for the Pi coding agent via [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman) skills.
 
 ## 1. Prerequisites
 
-- Pi coding agent installed (see [Pi Coding Agent Setup for Linux](../) or [Arch-specific guide](../../arch/pi/))
-- Node.js 22.13+ (for caveman CLI tools, optional)
-- Git
+- Pi installed — [Pi Coding Agent Setup for Linux](../) or [Arch-specific guide](../../arch/pi/)
+- Git. Node.js 22.13+ only for the optional CLI (see [cli/](cli/))
 
-## 2. Install JuliusBrussee/caveman Skills
-
-### Option A: Manual Skills Installation (Recommended)
-
-Clone JuliusBrussee/caveman repository and extract skills:
+## 2. Install skills (recommended)
 
 ```bash
-# Clone repo
-mkdir -p ~/.pi/agent/skills/caveman-source
-cd ~/.pi/agent/skills/caveman-source
-git clone https://github.com/JuliusBrussee/caveman.git .
-
-# Copy skills to agents skills directory (Pi auto-discovers from ~/.agents/skills/)
-mkdir -p ~/.agents/skills
-cp -r skills/caveman ~/.agents/skills/caveman-caveman
-cp -r skills/ultracave ~/.agents/skills/caveman-ultracave
-cp -r skills/megacave ~/.agents/skills/caveman-megacave
-cp -r skills/caveman-compress ~/.agents/skills/caveman-compress
-
-# Clean up
-rm -rf ~/.pi/agent/skills/caveman-source
+mkdir -p ~/.agents/skills ~/src/caveman
+git clone https://github.com/JuliusBrussee/caveman.git ~/src/caveman
+cp -r ~/src/caveman/skills/caveman        ~/.agents/skills/caveman-caveman
+cp -r ~/src/caveman/skills/ultracave      ~/.agents/skills/caveman-ultracave
+cp -r ~/src/caveman/skills/megacave       ~/.agents/skills/caveman-megacave
+cp -r ~/src/caveman/skills/caveman-compress ~/.agents/skills/caveman-compress
 ```
 
-### Option B: Legacy v2nic Package (Fallback)
+Pi auto-discovers `~/.agents/skills/`. Alternatively point the `skills` array in `~/.pi/agent/settings.json` at the parent dir:
 
-If manual installation fails, use the v2nic package as fallback:
+```json
+{ "skills": ["~/.agents/skills"] }
+```
+
+### Fallback: legacy v2nic package
 
 ```bash
 pi install git:github.com/v2nic/pi-caveman
-pi list          # shows: git:github.com/v2nic/pi-caveman
+pi list          # git:github.com/v2nic/pi-caveman
 ```
 
-This clones the package into `~/.pi/agent/git/github.com/v2nic/pi-caveman/` and adds it to `packages` in `~/.pi/agent/settings.json`. Skills/extensions from the package are discovered automatically; restart pi or `/reload` after install.
+Clones into `~/.pi/agent/git/github.com/v2nic/pi-caveman/`, adds it to `packages` in `~/.pi/agent/settings.json`. `--reload` (or restart) after install. Try without installing: `pi -e ~/.pi/agent/git/github.com/v2nic/pi-caveman/extensions/caveman`.
 
-Temporary try without installing: `pi -e ~/.pi/agent/git/github.com/v2nic/pi-caveman/extensions/caveman`.
-
-## 3. Configure Pi Settings
-
-Add skills directory to Pi settings:
-
-```bash
-nano ~/.pi/agent/settings.json
-```
-
-Add `~/.agents/skills` to `skills` array:
-
-```json
-{
-  "skills": [
-    "~/.agents/skills"
-  ]
-}
-```
-
-## 4. Reload Pi
-
-```bash
-/reload
-```
-
-## 5. Verify
-
-Test caveman modes:
+## 3. Verify
 
 ```
 /caveman
@@ -81,74 +44,38 @@ Test caveman modes:
 /stop caveman
 ```
 
-For v2nic package installation:
-```bash
-pi list | grep pi-caveman
-ls ~/.pi/agent/git/github.com/v2nic/pi-caveman/skills/caveman/SKILL.md
-```
+Legacy install check: `ls ~/.pi/agent/git/github.com/v2nic/pi-caveman/skills/caveman/SKILL.md`.
 
-## 6. Commands Reference
+## 4. Commands
 
 | Command | Description |
 |---|---|
-| `/caveman` | Activate standard caveman mode |
-| `/ultracave` or `/caveman ultra` | Maximum compression, telegraphic |
-| `/megacave` or `/caveman wenyan` | Classical Chinese mode |
+| `/caveman` | Standard caveman mode |
+| `/ultracave`, `/caveman ultra` | Maximum compression, telegraphic |
+| `/megacave`, `/caveman wenyan` | Classical Chinese (文言文) |
 | `/caveman-compress <file>` | Compress memory files with backup |
 | `/caveman status` | Report current mode |
-| `/stop caveman` or `/normal mode` | Deactivate caveman mode |
+| `/stop caveman`, `/normal mode` | Deactivate |
 
-## 7. Compression Levels
+Compression: caveman 30-45%, ultracave 40-60%, megacave 30-50%.
 
-| Mode | Description | Token Reduction |
-|------|-------------|-----------------|
-| caveman | Standard: drop articles, filler, fragments ok | 30-45% |
-| ultracave | Maximum: telegraphic, fragments | 40-60% |
-| megacave | Classical Chinese: 文言文 | 30-50% |
+## 5. Rules
 
-## 8. Rules Summary
+Remove: articles, filler (just, really, basically, actually, simply), pleasantries, hedging, connectives. Keep verbatim: technical terms, numbers, names, negations (not, never, no, only, except), code, commands, paths, errors.
 
-### Always Remove
-- Articles: a, an, the
-- Filler: just, really, basically, actually, simply
-- Pleasantries: sure, certainly, of course, happy to
-- Hedging: might, could, perhaps, maybe, possibly
-- Connectives: because, therefore, however
+Format: answer first, then reason, then next step; one idea per sentence; ≤20 words; active voice; imperative for instructions.
 
-### Always Keep
-- Technical terms (exact)
-- Numbers and quantifiers
-- Names, titles
-- Negations: not, never, no, only, except
-- Code blocks, commands, paths, errors (verbatim)
+Full sentences for: security warnings, irreversible actions, step order fragments could scramble, confused users, anything persisted outside chat (code, commits, docs), questions to the user.
 
-### Formatting
-- Answer first, then reason, then next step
-- Pattern: `[thing] [action] [reason]. [next step].`
-- One idea per sentence
-- 20 words max per sentence
-- Active voice
-- Imperative for instructions
+## 6. Troubleshooting
 
-## 9. When to Break Rules
-
-Use full sentences for:
-- Security warnings
-- Irreversible actions
-- Step order that fragments could scramble
-- Confused users
-- Anything persisted outside chat (code, commits, docs)
-- Questions to user
-
-## 10. Troubleshooting
-
-- Skill not visible after install — restart pi or run `/reload`; skills path must be in `~/.pi/agent/settings.json` under `skills`.
-- Issues with v2nic package — see [v2nic/pi-caveman](https://github.com/v2nic/pi-caveman) for fallback-specific issues.
+- Skill not visible — restart pi or `/reload`; skill path must be discoverable (`~/.agents/skills/` or listed in `settings.json`).
+- v2nic-specific issues — see [v2nic/pi-caveman](https://github.com/v2nic/pi-caveman).
 
 ## See Also
 
-- [caveman-compress](./compress/) - Compress memory files
-- [Pi Caveman CLI Integration Assessment](./cli/) - Assessment of using `@caveman-ai/cli` with Pi
+- [caveman-compress](compress/) — compress memory files
+- [Pi Caveman CLI Integration Assessment](cli/) — `@caveman-ai/cli` with Pi
 
 ## Source
 
