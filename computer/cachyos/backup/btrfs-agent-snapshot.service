@@ -1,0 +1,11 @@
+[Unit]
+Description=Btrfs agent snapshot on startup
+After=local-fs.target
+Before=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/btrfs-agent-snapshot
+
+[Install]
+WantedBy=multi-user.target
