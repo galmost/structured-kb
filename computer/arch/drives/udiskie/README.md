@@ -18,8 +18,31 @@ program_options:
   automount: false        # require manual mounting
   automount_open: false
   notify: true
-  notify_all: true        # notification for every event
-  file_manager: thunar    # or nautilus, dolphin, pcmanfm
+  notify_all: false
+  file_manager: thunar    # or nautilus, dolphin, pcmanfm, etc.
+  mount_options:
+    defaults:
+      - noatime
+      - nodiratime
+      - nosuid
+      - nodev
+      - noexec
+      - uid=1000
+      - gid=1000
+```
+
+### Security-Focused Configuration
+
+For enhanced security, disable automount and require manual mounting:
+
+```yaml
+program_options:
+  # DISABLE automatic mounting for security
+  automount: false
+  automount_open: false
+  tray: true
+  notify: true
+  notify_all: true
   mount_options:
     defaults:
       - noatime
@@ -35,19 +58,22 @@ program_options:
 
 ```yaml
 mount_options:
+  defaults:
+    - umask=022
   ntfs:
     - windows_names
-  vfat:
-    - utf8
-    - shortname=mixed
-  defaults:
     - uid=1000
     - gid=1000
-    - umask=022
+  vfat:
+    - uid=1000
+    - gid=1000
+    - utf8
+    - shortname=mixed
 
 device_options:
   auto_mount:
     - /dev/sda1
+    - /dev/sdb1
   ignore:
     - /dev/loop*
     - /dev/sr*
@@ -78,7 +104,7 @@ pacman -Q udisks2 gvfs
 groups     # user must be in storage group
 ```
 
-Add and apply group: `sudo usermod -aG storage $USER` then `newgrp storage`.
+Add `storage` to the user (`sudo usermod -aG storage $USER`) and apply with `newgrp storage`.
 
 ### Devices not appearing
 

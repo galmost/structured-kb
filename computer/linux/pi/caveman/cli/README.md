@@ -5,8 +5,8 @@
 ## 1. Install
 
 ```bash
-npm install -g --ignore-scripts @earendil-works/pi-coding-agent   # optional: skip postinstall
 npm install -g @caveman-ai/cli                                    # or: npx @caveman-ai/cli@latest
+npm install -g --ignore-scripts @earendil-works/pi-coding-agent   # optional: skip postinstall
 ```
 
 Needs Node.js 22.13+ and npm.
@@ -48,7 +48,7 @@ Pi not listed. `caveman pi` fails or passes through.
 caveman setup
 ```
 
-Skills-side mode check: `/caveman status` in Pi.
+Pi must be installed and on `PATH` first — [Pi Setup](../../). Skills-side mode check: `/caveman status` in Pi.
 
 ## Source
 

@@ -4,10 +4,10 @@ User skills for [pi coding agent](README.md) live at `~/.pi/agent/skills/<name>/
 
 For the `caveman` voice skill on **any** pi install prefer the manual JuliusBrussee install — [../../../linux/pi/caveman/](../../../linux/pi/caveman/README.md).
 
-| skill | what it does |
-|---|---|
-| `caveman` | terse voice, on until "stop caveman" / "normal mode" |
-| `caveman-compress` | compress memory files (AGENTS.md, todos) to save tokens |
+| skill | dir | what it does |
+|---|---|---|
+| `caveman` | `~/.pi/agent/skills/caveman/` | terse voice, on until "stop caveman" / "normal mode" |
+| `caveman-compress` | `~/.pi/agent/skills/caveman-compress/` | compress memory files (AGENTS.md, todos) to save tokens |
 
 `~/AGENTS.md` loads `caveman` every run.
 
@@ -20,7 +20,16 @@ For the `caveman` voice skill on **any** pi install prefer the manual JuliusBrus
 
 ### Option A: JuliusBrussee skills (recommended)
 
-Clone `JuliusBrussee/caveman`, copy the `caveman` skill dirs into `~/.agents/skills/`, then point pi's `skills` setting at that dir. Full commands: [../../../linux/pi/caveman/](../../../linux/pi/caveman/README.md).
+```bash
+mkdir -p ~/.agents/skills
+cd ~/.agents/skills
+git clone https://github.com/JuliusBrussee/caveman.git caveman-src
+cp -r caveman-src/skills/caveman ~/.agents/skills/caveman-caveman
+cp -r caveman-src/skills/caveman-compress ~/.agents/skills/caveman-compress
+rm -rf caveman-src
+```
+
+Then point pi's `skills` setting at that dir. Full commands: [../../../linux/pi/caveman/](../../../linux/pi/caveman/README.md).
 
 ### Option B: legacy Vibe copies (fallback)
 
@@ -64,13 +73,17 @@ CAVEMAN_COMPRESS_REASONING_EFFORT=low
 
 ```bash
 ls ~/.agents/skills/caveman-caveman/SKILL.md ~/.agents/skills/caveman-compress/SKILL.md
+# legacy Vibe install instead:
+ls ~/.pi/agent/skills/caveman/SKILL.md ~/.pi/agent/skills/caveman-compress/SKILL.md
+
 pi -p 'Say exactly: pong' --no-session        # skills listed in startup diagnostics
 # interactive: /skill:caveman  -> terse replies until "stop caveman"
+# interactive: /skill:caveman-compress ~/git/structured-kb/AGENTS.md
 ```
 
 ## Troubleshooting
 
-- Not listed at startup — wrong layout. Must be `<dir>/<name>/SKILL.md`, not `<dir>/<name>.md`; run `/reload`.
+- Not listed at startup — wrong layout. Must be `~/.pi/agent/skills/<name>/SKILL.md` or `~/.agents/skills/<name>/SKILL.md`, not `~/.pi/agent/skills/<name>.md`; run `/reload` after a move.
 - HTTP 401 — `CAVEMAN_COMPRESS_API_KEY` empty: new shell, or `pi auth login mistral --api-key`.
 - HTTP 422 `chat_template_kwargs` — Mistral patch missing in `scripts/compress.py`; re-copy skill dir.
 - File refused — extension not allowed (.md, .txt, .typ, .tex, extensionless) or name looks secret.

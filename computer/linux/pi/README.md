@@ -20,11 +20,15 @@ sudo apt install -y nodejs      # npm included
 sudo dnf module enable nodejs:20 && sudo dnf install -y nodejs
 ```
 
+Or from NodeSource: `curl -fsSL https://rpm.nodesource.com/setup_20.x | sudo bash -` then `sudo dnf install -y nodejs`.
+
 **openSUSE:**
 
 ```bash
 sudo zypper install -y nodejs20
 ```
+
+Or from NodeSource: `curl -fsSL https://rpm.nodesource.com/setup_20.x | sudo bash -` then `sudo zypper install -y nodejs`.
 
 **Arch/Manjaro/CachyOS:** `yay -S nodejs` (AUR `nodejs` includes npm). Details: [Arch guide](../../arch/pi/).
 
@@ -69,12 +73,39 @@ pi --help
 
 | Provider | Example models |
 |----------|----------------|
-| mistral | mistral-medium-latest, mistral-small-latest |
-| openai | gpt-4o-mini, gpt-4o |
+| mistral | mistral-medium-latest, mistral-small-latest, mistral-tiny-latest |
+| openai | gpt-4o-mini, gpt-4o, gpt-3.5-turbo |
 | anthropic | claude-3-5-sonnet-20250620, claude-3-haiku-20240307 |
 | google | gemini-1.5-flash, gemini-1.5-pro |
 
 For OAuth-based providers prefer `pi auth login <provider>`; provider state lands in `~/.pi/agent/auth.json`.
+
+To set a default explicitly, edit `defaultProvider` and `defaultModel` in the same file:
+
+```json
+{
+  "defaultProvider": "openai",
+  "defaultModel": "gpt-4o-mini"
+}
+```
+
+### API keys
+
+`~/.pi/agent/auth.json` holds provider credentials:
+
+```json
+{
+  "openai": { "apiKey": "sk-..." },
+  "anthropic": { "apiKey": "sk_ant_..." },
+  "mistral": { "apiKey": "..." }
+}
+```
+
+Keep it private:
+
+```bash
+chmod 600 ~/.pi/agent/auth.json
+```
 
 ## 5. Troubleshooting
 
@@ -87,13 +118,14 @@ mkdir -p ~/.npm-global
 npm config set prefix '~/.npm-global'
 echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
 source ~/.bashrc
+npm install -g @earendil-works/pi-coding-agent
 ```
 
-Or `npm install -g --prefix ~/.local`, or nvm (`nvm install --lts`).
+Or `npm install -g --prefix ~/.local`, or nvm (`nvm install --lts` then `nvm use --lts`).
 
 ### Node.js too old / npm missing
 
-`node -v` prints the version; npm ships inside the distro `nodejs` package from NodeSource or the AUR. Reinstall `nodejs`; do not add a separate `npm` package where it conflicts.
+`node -v` prints the version; npm ships inside the distro `nodejs` package from NodeSource or the AUR. Reinstall `nodejs`; do not add a separate `npm` package where it conflicts. On Debian/Ubuntu the NodeSource `nodejs` package includes npm; on Fedora/RHEL and the AUR likewise.
 
 ### `pi` command not found
 

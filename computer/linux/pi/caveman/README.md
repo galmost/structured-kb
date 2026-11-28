@@ -4,7 +4,7 @@ Ultra-compressed responses for the Pi coding agent via [JuliusBrussee/caveman](h
 
 ## 1. Prerequisites
 
-- Pi installed — [Pi Coding Agent Setup for Linux](../) or [Arch-specific guide](../../arch/pi/)
+- Pi installed — [Pi Coding Agent Setup for Linux](../) or [Arch-specific guide](../../arch/pi/README.md)
 - Git. Node.js 22.13+ only for the optional CLI (see [cli/](cli/))
 
 ## 2. Install skills (recommended)
@@ -61,7 +61,17 @@ Compression: caveman 30-45%, ultracave 40-60%, megacave 30-50%.
 
 ## 5. Rules
 
-Remove: articles, filler (just, really, basically, actually, simply), pleasantries, hedging, connectives. Keep verbatim: technical terms, numbers, names, negations (not, never, no, only, except), code, commands, paths, errors.
+Compression levels:
+
+| Mode | Description | Token reduction |
+|------|-------------|-----------------|
+| caveman | Standard: drop articles, filler, fragments ok | 30-45% |
+| ultracave | Maximum: telegraphic, fragments | 40-60% |
+| megacave | Classical Chinese: 文言文 | 30-50% |
+
+Always remove: articles (a, an, the); filler (just, really, basically, actually, simply); pleasantries (sure, certainly, of course, happy to); hedging (might, could, perhaps, maybe, possibly); connectives (because, therefore, however).
+
+Always keep: technical terms exact; numbers and quantifiers; names and titles; negations (not, never, no, only, except); code blocks, commands, paths and errors verbatim.
 
 Format: answer first, then reason, then next step; one idea per sentence; ≤20 words; active voice; imperative for instructions.
 
@@ -69,7 +79,7 @@ Full sentences for: security warnings, irreversible actions, step order fragment
 
 ## 6. Troubleshooting
 
-- Skill not visible — restart pi or `/reload`; skill path must be discoverable (`~/.agents/skills/` or listed in `settings.json`).
+- Skill not visible — restart pi or `/reload`; skills path must be in `~/.pi/agent/settings.json` under `skills`.
 - v2nic-specific issues — see [v2nic/pi-caveman](https://github.com/v2nic/pi-caveman).
 
 ## See Also

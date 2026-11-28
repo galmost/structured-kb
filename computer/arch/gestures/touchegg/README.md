@@ -18,6 +18,21 @@ systemctl status touchegg
 
 Run as system service; it handles input-device access. No `~/.config/autostart` entry needed.
 
+### Optional: start at desktop login instead
+
+Without the system unit, start Touchégg from the session autostart:
+
+```bash
+mkdir -p ~/.config/autostart
+cat > ~/.config/autostart/touchegg.desktop << EOF
+[Desktop Entry]
+Type=Application
+Name=Touchegg Client
+Exec=touchegg
+X-GNOME-Autostart-enabled=true
+EOF
+```
+
 ## 3. Configuration
 
 | Scope | Path |

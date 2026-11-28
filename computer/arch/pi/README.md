@@ -7,6 +7,8 @@ Install Pi coding agent via npm on Arch-based systems (CachyOS, Arch Linux, Manj
 Node.js 18+ and npm. Arch ships both in the AUR (`nodejs` package includes npm; no separate `npm` package — AUR `npm` conflicts):
 
 ```bash
+sudo pacman -S curl      # only if the AUR helper needs it
+
 yay -S nodejs       # or: paru -S nodejs
 node -v
 npm -v
@@ -24,7 +26,7 @@ npm update -g @earendil-works/pi-coding-agent    # update
 npm uninstall -g @earendil-works/pi-coding-agent # uninstall
 ```
 
-`--ignore-scripts` is safe for upgrades; most functionality works without post-install scripts.
+`--ignore-scripts` is safe for upgrades. Use it when post-install scripts fail, when you want to skip optional setup, or while debugging an install; most Pi functionality works without them, though some optional integrations may need manual setup.
 
 ## 3. Verify
 

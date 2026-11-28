@@ -9,7 +9,8 @@ Local-first recovery for agent damage and full wipes. Layers: btrfs snapshots (i
 | 1 | Btrfs snapshots (snapper) | `/` | 3 monthly | `snapper-timeline.timer` | Instant |
 | 2 | Btrfs agent snapshots | `/home` | 3 newest | Startup + on-demand | Instant |
 | 3 | Home git snapshot | Dotfiles, configs, package lists | Unlimited (Bitbucket) | Daily user timer | Git checkout |
-| 4 | Off-box backup | Home + `/etc` + secrets | WIP (§8) | WIP | WIP |
+| 4 | Off-box backup | Home + `/etc` + secrets | WIP | WIP | WIP |
+| 5 | Secrets backup | Encrypted tarball | WIP | WIP | WIP |
 
 **Restore priority:** agent snapshots (home) → snapper (system) → home git (configs) → full reinstall.
 
@@ -28,6 +29,7 @@ TIMELINE_LIMIT_YEARLY="0"
 
 ```bash
 pkexec systemctl enable --now snapper-timeline.timer
+pkexec systemctl status snapper-timeline.timer
 pkexec snapper list                    # snapshots live in /.snapshots/ (root-only)
 pkexec btrfs subvolume list /.snapshots
 ```
@@ -121,7 +123,7 @@ pkexec umount /mnt/restore
 
 ## 4. Home git snapshot
 
-Daily commits of allowlisted dotfiles to Bitbucket. Full setup: [home-git-snapshot/](../home-git-snapshot/README.md).
+Already configured — daily commits of allowlisted dotfiles, package lists and scripts to Bitbucket. Full setup: [home-git-snapshot/](../home-git-snapshot/README.md).
 
 Tracked: `~/.zshrc`, `~/.gitconfig`, `~/.pi/agent/settings.json`, `~/.pi/agent/models-store.json`, allowlisted `~/.config/...`, `galmost@GCachyDeck/packages/pacman-{explicit,foreign}.txt`, `galmost@GCachyDeck/bin/*`.
 
