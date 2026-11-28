@@ -1,0 +1,14 @@
+[Unit]
+Description=llama.cpp server - local-qwen3-8-27b-iq3xxs (port 9937)
+After=network.target
+
+Conflicts=local-gemma-4-12b-iq3xxs.service local-inkling-2-mini-iq3xxs.service local-qwen2-5-coder-7b-q4km.service local-qwen3-4b-q4km.service local-qwen3-5-4b-iq2xxs.service local-qwen3-5-9b-q4ks.service local-gemma-4-e4b-iq3xxs.service
+[Service]
+Type=simple
+ExecStart=/home/galmost/.local/bin/llama.cpp/llama serve -m /home/galmost/models/qwen-3.8-27b/Qwen3.8-27B-UD-IQ3_XXS.gguf --ctx-size 8192 --threads 4 -ngl 0 --port 9937 --jinja --parallel 1
+Restart=on-failure
+RestartSec=10
+Environment=PATH=/home/galmost/.local/bin:/usr/bin:/bin
+
+[Install]
+WantedBy=default.target
