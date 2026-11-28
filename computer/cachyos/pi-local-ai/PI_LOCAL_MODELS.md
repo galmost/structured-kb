@@ -7,6 +7,12 @@
 | Provider / Model ID | Port | File | Gen t/s | Service | Boot |
 |---------------------|------|------|---------|---------|------|
 | local-gemma-4-e4b-iq3xxs | 9931 | gemma-4-E4B-it-UD-IQ3_XXS.gguf (3.5GB) | 5.2 | ✅ enabled | yes |
+| local-qwen3-5-4b-iq2xxs | 9933 | Qwen3.5-4B-UD-IQ2_XXS.gguf (1.5GB) | 7.0 | on-demand | no |
+| local-qwen2-5-coder-7b-q4km | 9932 | Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf (4.4GB) | 5.3 | on-demand | no |
+| local-gemma-4-12b-iq3xxs | 9934 | gemma-4-12b-it-UD-IQ3_XXS.gguf (4.4GB) | 2.1 | on-demand | no |
+| local-qwen3-5-9b-q4ks | 9935 | Qwen3.5-9B-Q4_K_S.gguf (5.1GB) | 4.3 | on-demand | no |
+| local-inkling-2-mini-iq3xxs | 9936 | Inkling-2-Mini-UD-IQ3_XXS.gguf (11GB) | 3.0 | on-demand | no |
+| local-qwen3-8-27b-iq3xxs | 9937 | Qwen3.8-27B-UD-IQ3_XXS.gguf (11GB) | 0.3 | on-demand | no |
 
 **Context**: gemma-4-E4B native `context_length` = 131072 (128k). Service runs `--ctx-size 32768` (safe on 14GB RAM, KV fits). Bump to 65536/131072 if free RAM >8GB; watch `free -h`.
 | local-qwen2-5-coder-7b-q4km | 9932 | Qwen2.5-Coder-7B Q4_K_M (4.4GB) | 5.3 | on-demand | no |

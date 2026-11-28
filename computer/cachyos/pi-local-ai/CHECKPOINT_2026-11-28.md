@@ -3,7 +3,7 @@
 ## Hardware
 - AMD Custom APU 0932/0405 (Sephiroth), 8 cores (4C/8T)
 - 14GB RAM (9.6GB available)
-- 912GB free disk
+- 860GB free disk (after 43.3GB models)
 - CachyOS Linux
 
 ## Tools Installed
@@ -20,7 +20,7 @@
 - Token: OAuth in ~/.cache/huggingface/token
 - Commands used: `hf auth whoami`, `hf models list REPO -R`, `hf download REPO FILE --local-dir DIR --max-workers 4`
 
-## Models Downloaded (40GB total)
+## Models Downloaded (43.3GB total)
 | Model | File | Size | Gen t/s | Use |
 |-------|------|------|---------|-----|
 | Qwen3.5-4B | Qwen3.5-4B-UD-IQ2_XXS.gguf | 1.5GB | **7.0** | Speed |
@@ -45,17 +45,22 @@
 ## Working Commands
 ```bash
 # CLI chat
-llama cli -m ~/.pi/research/models/qwen3.5-4b/Qwen3.5-4B-UD-IQ2_XXS.gguf --ctx-size 8192 --threads 4 -ngl 0
+llama cli -m ~/models/qwen3.5-4b/Qwen3.5-4B-UD-IQ2_XXS.gguf --ctx-size 8192 --threads 4 -ngl 0
 
 # Server for pi
-llama serve -m ~/.pi/research/models/gemma-4-e4b/gemma-4-E4B-it-UD-IQ3_XXS.gguf --ctx-size 8192 --threads 4 -ngl 0 --port 9931 --jinja
+llama serve -m ~/models/gemma-4-E4B/gemma-4-E4B-it-UD-IQ3_XXS.gguf --ctx-size 8192 --threads 4 -ngl 0 --port 9931 --jinja
 
 # API test
 curl http://127.0.0.1:9931/v1/chat/completions -H "Content-Type: application/json" \
   -d '{"model":"gemma-4-e4b","messages":[{"role":"user","content":"hi"}],"max_tokens":10}'
 
-# HF download
-hf download unsloth/Qwen3.5-4B-GGUF Qwen3.5-4B-UD-IQ2_XXS.gguf --local-dir ~/.pi/research/models/qwen3.5-4b --max-workers 4
+# HF download examples
+hf download unsloth/Qwen3.5-4B-GGUF Qwen3.5-4B-UD-IQ2_XXS.gguf --local-dir ~/models/qwen3.5-4b --max-workers 4
+hf download Qwen/Qwen2.5-Coder-7B-Instruct-GGUF qwen2.5-coder-7b-instruct-q4_k_m.gguf --local-dir ~/models/qwen2.5-coder-7b --max-workers 4
+hf download unsloth/gemma-4-12b-it-GGUF gemma-4-12b-it-UD-IQ3_XXS.gguf --local-dir ~/models/gemma-4-12b --max-workers 4
+hf download unsloth/Qwen3.5-9B-GGUF Qwen3.5-9B-Q4_K_S.gguf --local-dir ~/models/qwen3.5-9b --max-workers 4
+hf download unsloth/Inkling-2-Mini-GGUF Inkling-2-Mini-UD-IQ3_XXS.gguf --local-dir ~/models/inkling-2-mini --max-workers 4
+hf download unsloth/Qwen3.8-27B-GGUF Qwen3.8-27B-UD-IQ3_XXS.gguf --local-dir ~/models/qwen-3.8-27b --max-workers 4
 ```
 
 ## Pi Config
