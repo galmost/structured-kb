@@ -22,9 +22,11 @@ No strict order. Every item independent.
 | Brave (default browser) | [../linux/brave/](../linux/brave/README.md), [../arch/brave/](../arch/brave/README.md) | Brave 158.1.100.59, `xdg-settings set default-web-browser brave-browser.desktop` |
 | udiskie automount tray | [../arch/drives/udiskie/](../arch/drives/udiskie/README.md) | `~/.config/udiskie/config.yml` (automount off, nosuid/nodev/noexec), autostart `~/.config/autostart/udiskie.desktop` |
 | CLI tools: htop ncdu aria2 + bat alias | [../debian/cli-tools/](../debian/cli-tools/README.md), [../debian/aria2c/](../debian/aria2c/README.md) | htop 3.5.3, ncdu 2.9.2, aria2 1.37.0 via pacman; rg fd jq fzf bat eza duf preinstalled; `alias batcat="bat"` in `~/.zshrc` (Arch binary is `bat`) |
-| wl-clipboard (Wayland clipboard) | — | wl-clipboard 2.3.0 (`wl-copy`/`wl-paste`) |
+| Clipboard: wl-clipboard + xclip + xsel | [../linux/terminal/](../linux/terminal/README.md) | wl-clipboard 2.3.0 (`wl-copy`/`wl-paste`) for Wayland; xclip/xsel for XWayland apps |
+| Terminal images: chafa | [../linux/terminal/](../linux/terminal/README.md) | chafa 1.18.3 (`chafa image.png`), img2txt fallback |
+| Desktop notifications | [../linux/terminal/](../linux/terminal/README.md) | `notify-send` via libnotify |
 | GitHub CLI `gh` | — | gh 2.105.0, authed via keyring |
-| pi coding agent + caveman skill | [../linux/ai/pi/skills/caveman/](../linux/ai/pi/skills/caveman/README.md) | Manual skills from [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman) |
+| pi coding agent + caveman skill | [../linux/pi/caveman/](../linux/pi/caveman/README.md) | Manual skills from [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman) in `~/.agents/skills/` |
 | Daily home git snapshot | [home-git-snapshot/](home-git-snapshot/README.md) | `gcachydeck-home-snapshot.timer` active, pushes to Bitbucket main |
 | KeePassXC + Brave integration | [keepassxc/](keepassxc/README.md) | 2.8.0, `[Browser] Enabled=true`, KeePassXC-Browser ext in Brave |
 | Brave debloat + dark mode | [brave-config/](brave-config/README.md) | dark (`color_scheme2=2`), rewards/wallet/leo/news/vpn/sidebar off |
