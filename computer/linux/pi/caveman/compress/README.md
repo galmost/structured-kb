@@ -1,21 +1,16 @@
-# caveman-compress on pi (Debian 13)
+# caveman-compress on pi (Linux, any distro)
 
-Port of the Vibe `caveman-compress` skill to the pi coding agent, configured to
-compress with **Mistral `mistral-large-latest`, reasoning effort low**. Compresses
-natural-language memory files (AGENTS.md, README notes, todos) into caveman-speak
-to cut input tokens; the human-readable original is backed up out-of-tree.
+Compress memory files (AGENTS.md, todos, preferences) into caveman format to cut input tokens. Part of [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman), works on any distro with pi. On this host, configured to compress with **Mistral `mistral-large-latest`, reasoning effort low**.
 
-Related: [pi harness note](../pi/README.md), [pi user-skills note](../pi/README-skills.md).
+Related: [Pi Caveman Setup](../README.md), [Pi harness note](../../README.md).
 
 ## 1. Layout
 
-- Skill: `~/.pi/agent/skills/caveman-compress/` (`SKILL.md`, `README.md`,
-  `SECURITY.md`, `scripts/`), copied from `~/.vibe/skills/caveman-compress/`
-  with the trigger rewritten `/caveman-compress` → `/skill:caveman-compress`.
-- Run from the skill dir: `python3 -m scripts <absolute_filepath>`
-  (or `/skill:caveman-compress <filepath>` in an interactive pi session).
+- Skill: `~/.agents/skills/caveman-compress/` (`SKILL.md`, `SECURITY.md`, `scripts/`),
+  from JuliusBrussee/caveman (installed with main setup, see [../README.md](../README.md)).
+- Run: `/caveman-compress <filepath>` in pi, or `python3 -m scripts <absolute_filepath>` from skill dir.
 - Backups: `$XDG_DATA_HOME/caveman-compress/backups/<parent-dir>-<hash>/<file>.original.md`
-  — never beside the source file, so skill auto-loaders don't re-ingest them.
+  — never beside source file.
 
 ## 2. Provider config (Mistral, no secret on disk)
 
@@ -81,7 +76,7 @@ original untouched — just re-run. Compressed on this host so far:
 
 ## Source
 
-- Upstream Vibe skill: `~/.vibe/skills/caveman-compress/`
-- [pi user-skills note](../pi/README-skills.md)
-- [Mistral note](../mistral/README.md)
+- [JuliusBrussee/caveman skill](https://github.com/JuliusBrussee/caveman/tree/main/skills/caveman-compress)
+- [Pi Caveman Setup](../README.md)
+- [Mistral note](../../../debian/ai/mistral/README.md)
 - Mistral API: https://docs.mistral.ai/api/

@@ -147,6 +147,7 @@ Use full sentences for:
 
 ## See Also
 
+- [caveman-compress](./compress/) - Compress memory files
 - [Pi Caveman CLI Integration Assessment](./cli/) - Assessment of using `@caveman-ai/cli` with Pi
 
 ## Source
