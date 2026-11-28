@@ -1,29 +1,17 @@
 # Caveman CLI for Pi (Assessment)
 
-`@caveman-ai/cli` v4.2.0 wraps 30+ agents with compression, metering, Auto. Pi not supported (OMP is, different tool). Skills approach recommended for Pi.
+`@caveman-ai/cli` v4.2.0 wraps 30+ agents with compression, metering and Auto mode. Pi is **not** supported (OMP is a different tool), so the skills route is the Pi answer.
 
-## 1. Prerequisites
-
-- Node.js 22.13+
-- npm
-- Pi installed (see [Pi Setup](../../))
-
-## 2. Pi Update
+## 1. Install
 
 ```bash
-npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+npm install -g @caveman-ai/cli                                    # or: npx @caveman-ai/cli@latest
+npm install -g --ignore-scripts @earendil-works/pi-coding-agent   # optional: skip postinstall
 ```
 
-`--ignore-scripts` skips postinstall. Optional, safe for upgrades.
+Needs Node.js 22.13+ and npm.
 
-## 3. CLI Install
-
-```bash
-npm install -g @caveman-ai/cli
-# or: npx @caveman-ai/cli@latest
-```
-
-## 4. Supported Agents
+## 2. Supported agents
 
 | Agent | Command |
 |-------|---------|
@@ -34,9 +22,9 @@ npm install -g @caveman-ai/cli
 | OMP | `caveman omp` |
 | Copilot | `caveman copilot` |
 
-Pi not listed. `caveman pi` fails or pass-through.
+Pi not listed. `caveman pi` fails or passes through.
 
-## 5. CLI vs Skills
+## 3. CLI vs Skills
 
 | Feature | Skills | CLI |
 |---------|--------|-----|
@@ -48,18 +36,19 @@ Pi not listed. `caveman pi` fails or pass-through.
 | Pi support | ✅ | ❌ |
 | Deps | None | Node 22.13+, Go binaries |
 
-## 6. Recommendation
+## 4. Recommendation
 
 - **Pi only**: Skills (current setup). Simple, native.
-- **Multi-agent**: CLI for others + skills for Pi.
-- **Experimental**: `caveman pi` may not work. Debug expected.
+- **Multi-agent**: CLI for the other agents, skills for Pi.
+- **Experimental**: `caveman pi` may not work — debugging expected.
 
 ## Verify
 
 ```bash
-/caveman status
 caveman setup
 ```
+
+Pi must be installed and on `PATH` first — [Pi Setup](../../). Skills-side mode check: `/caveman status` in Pi.
 
 ## Source
 

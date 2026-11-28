@@ -1,43 +1,29 @@
-# Touchégg
+# Touchégg Setup (Arch Linux)
 
-Touchégg is a multi-touch gesture recognizer that translates touchpad/touchscreen gestures into actions on Linux (X11 & Wayland). It runs as a background daemon and supports highly customizable gesture-to-action mappings.
+Touchpad/touchscreen gesture daemon, X11 and Wayland, XML gesture-to-action mappings.
 
-## 📦 Installation
+## 1. Install
 
 ```bash
-# Install via pacman (Arch Linux)
 pacman -S touchegg
-
-# Optional: Install the GUI tweaker via Flatpak
-flatpak install com.github.joseexposito.touche
+flatpak install com.github.joseexposito.touche   # optional GUI tweaker
 ```
 
-## 🚀 Service Management
-
-Touchégg ships with a systemd service. Enable it to auto-start on boot:
+## 2. Enable the daemon
 
 ```bash
-# Enable and start the daemon
 sudo systemctl enable --now touchegg
-
-# Check status
 systemctl status touchegg
 ```
 
-The service unit is symlinked as follows:
-```
-/etc/systemd/system/touchegg.service -> /usr/lib/systemd/system/touchegg.service
-```
+Run as system service; it handles input-device access. No `~/.config/autostart` entry needed.
 
-## 📱 Autostart Configuration (Optional)
+### Optional: start at desktop login instead
 
-To automatically start Touchégg when you log in to your desktop session, you can use the autostart mechanism:
+Without the system unit, start Touchégg from the session autostart:
 
 ```bash
-# Create autostart directory if it doesn't exist
 mkdir -p ~/.config/autostart
-
-# Create the autostart desktop file
 cat > ~/.config/autostart/touchegg.desktop << EOF
 [Desktop Entry]
 Type=Application
@@ -47,25 +33,21 @@ X-GNOME-Autostart-enabled=true
 EOF
 ```
 
-This will start Touchégg automatically when you log in to your GNOME (or compatible) desktop environment.
+## 3. Configuration
 
-## 📂 Configuration Locations
-
-| Scope       | Path                              |
-|-------------|-----------------------------------|
+| Scope | Path |
+|---|---|
 | System-wide | `/etc/xdg/touchegg/touchegg.conf` |
-| Per-user    | `~/.config/touchegg/touchegg.conf` |
+| Per-user | `~/.config/touchegg/touchegg.conf` |
 
-Per-user config takes priority when present. Copy the system config as a starting point:
+Per-user config wins when present:
 
 ```bash
 mkdir -p ~/.config/touchegg
 cp /etc/xdg/touchegg/touchegg.conf ~/.config/touchegg/touchegg.conf
 ```
 
-## ⚙️ Configuration Example
-
-Gestures are defined in XML inside `touchegg.conf`. Example — three-finger swipe right to go back in browser:
+Example — three-finger swipe right sends Ctrl+Alt+Left (browser back):
 
 ```xml
 <gesture type="SWIPE" fingers="3" direction="RIGHT">
@@ -76,13 +58,7 @@ Gestures are defined in XML inside `touchegg.conf`. Example — three-finger swi
 </gesture>
 ```
 
-## 🔗 Official Documentation
+## Source
 
-- GitHub / Installation Guide: https://github.com/JoseExposito/touchegg/tree/master/installation#readme
-- GUI Tweaker (Touché): https://flathub.org/apps/com.github.joseexposito.touche
-
-## 📝 Notes
-
-- Touchégg works on both X11 and Wayland sessions.
-- The GUI tweaker (Touché) provides a visual interface to configure gestures without editing XML manually.
-- Make sure your user has access to input devices (the daemon handles this automatically when run as a system service).
+- [Touchégg installation guide](https://github.com/JoseExposito/touchegg/tree/master/installation#readme)
+- [Touché GUI tweaker (Flathub)](https://flathub.org/apps/com.github.joseexposito.touche)

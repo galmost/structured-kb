@@ -1,75 +1,25 @@
-## 📦 Installation Options
+# udiskie Setup (Arch Linux)
 
-Udiskie is a simple tray application that shows mounted removable devices and provides easy access to them.
+Tray app for removable devices: shows mounts, mounts/unmounts on click. See §4 for secure automount-off config.
+
+## 1. Install
 
 ```bash
-# Install udiskie
 sudo pacman -S udiskie
-
-# Enable autostart (optional)
-mkdir -p ~/.config/autostart
-cat > ~/.config/autostart/udiskie.desktop << EOF
-[Desktop Entry]
-Type=Application
-Name=Udiskie
-Exec=udiskie --tray
-X-GNOME-Autostart-enabled=true
-EOF
-
-# Start manually
-udiskie --tray &
 ```
 
-## ⚙️ Configuration
+## 2. Configuration
 
-### Udiskie Configuration
-
-Create or edit `~/.config/udiskie/config.yml`:
+Create or edit `~/.config/udiskie/config.yml`. Secure defaults: no automount, `nosuid`/`nodev`/`noexec`:
 
 ```yaml
 program_options:
-  # Show tray icon
-  tray: true
-
-  # Automount options (disable for security)
-  automount: false
+  tray: true              # show tray icon
+  automount: false        # require manual mounting
   automount_open: false
-
-  # Notification settings
   notify: true
   notify_all: false
-
-  # File manager to use
-  file_manager: thunar  # or nautilus, dolphin, pcmanfm, etc.
-
-  # Mount options for security
-  mount_options:
-    defaults:
-      - noatime
-      - nodiratime
-      - nosuid
-      - nodev
-      - noexec
-```
-
-### Security-Focused Configuration
-
-For enhanced security, disable automount and require manual mounting:
-
-```yaml
-program_options:
-  # DISABLE automatic mounting for security
-  automount: false
-  automount_open: false
-
-  # Enable tray icon
-  tray: true
-
-  # Enable notifications for user awareness
-  notify: true
-  notify_all: true
-
-  # Secure mount options
+  file_manager: thunar    # or nautilus, dolphin, pcmanfm, etc.
   mount_options:
     defaults:
       - noatime
@@ -81,127 +31,98 @@ program_options:
       - gid=1000
 ```
 
-## 🚀 Usage
+### Security-Focused Configuration
 
-### Starting the Drives Manager
+For enhanced security, disable automount and require manual mounting:
 
-```bash
-# Start udiskie in tray mode
-udiskie --tray &
+```yaml
+program_options:
+  # DISABLE automatic mounting for security
+  automount: false
+  automount_open: false
+  tray: true
+  notify: true
+  notify_all: true
+  mount_options:
+    defaults:
+      - noatime
+      - nodiratime
+      - nosuid
+      - nodev
+      - noexec
+      - uid=1000
+      - gid=1000
 ```
 
-### System Tray Interaction
-
-- **Left-click** on tray icon: Shows mounted devices
-- **Right-click**: Options to mount/unmount/eject devices
-- **Hover**: Shows device information
-
-## 🔧 Troubleshooting
-
-### Tray Icon Not Appearing
-
-1. **Check if udiskie is running**:
-   ```bash
-   pgrep -a udiskie
-   ```
-
-2. **Verify dependencies**:
-   ```bash
-   pacman -Q udisks2 gvfs
-   ```
-
-3. **Check user permissions**:
-   ```bash
-   groups
-   ```
-   Ensure you're in the `storage` group:
-   ```bash
-   sudo usermod -aG storage $USER
-   ```
-
-### Devices Not Appearing
-
-1. **Check udisks2 service**:
-   ```bash
-   systemctl --user status udisks2
-   ```
-
-2. **Enable debug mode**:
-   ```bash
-   udiskie --verbose
-   ```
-
-3. **Manual mount test**:
-   ```bash
-   udisksctl mount -b /dev/sdX1
-   ```
-
-### Permission Issues
-
-```bash
-# Add user to necessary groups
-sudo usermod -aG storage,optical,uucp $USER
-
-# Apply group changes
-newgrp storage
-```
-
-## 📝 Advanced Configuration
-
-### Custom Mount Options
-
-Edit your udiskie configuration to add custom mount options:
+### Per-filesystem and per-device options
 
 ```yaml
 mount_options:
   defaults:
-    - noatime
-    - nodiratime
-    - nosuid
-    - nodev
-    - noexec
-    - uid=1000
-    - gid=1000
     - umask=022
-
   ntfs:
     - windows_names
     - uid=1000
     - gid=1000
-
   vfat:
     - uid=1000
     - gid=1000
     - utf8
     - shortname=mixed
-```
 
-### Device-Specific Rules
-
-Create rules for specific devices:
-
-```yaml
 device_options:
   auto_mount:
     - /dev/sda1
     - /dev/sdb1
-
   ignore:
     - /dev/loop*
     - /dev/sr*
 ```
 
-## 🔗 Additional Resources
+## 3. Autostart + usage
 
-- **Udiskie GitHub**: https://github.com/coldfix/udiskie
-- **Arch Wiki - Udisks**: https://wiki.archlinux.org/title/Udisks
-- **Arch Wiki - Storage devices**: https://wiki.archlinux.org/title/Storage_devices
-- **Arch Wiki - Removable media**: https://wiki.archlinux.org/title/Removable_media
+```bash
+mkdir -p ~/.config/autostart
+cat > ~/.config/autostart/udiskie.desktop << EOF
+[Desktop Entry]
+Type=Application
+Name=Udiskie
+Exec=udiskie --tray
+X-GNOME-Autostart-enabled=true
+EOF
+```
 
-## 💡 Tips
+Manual start: `udiskie --tray &`. Tray: left-click lists devices, right-click mounts/unmounts/ejects, hover shows info.
 
-- Udiskie works with both X11 and Wayland sessions
-- For encrypted drives, you'll be prompted for password when mounting
-- Network shares may require additional configuration
-- The tray icon appears when devices are connected or mounted
-- Consider disabling automount for security on shared computers
+## 4. Troubleshooting
+
+### Tray icon not appearing
+
+```bash
+pgrep -a udiskie
+pacman -Q udisks2 gvfs
+groups     # user must be in storage group
+```
+
+Add `storage` to the user (`sudo usermod -aG storage $USER`) and apply with `newgrp storage`.
+
+### Devices not appearing
+
+```bash
+systemctl --user status udisks2
+udiskie --verbose
+udisksctl mount -b /dev/sdX1
+```
+
+### Permission issues
+
+```bash
+sudo usermod -aG storage,optical,uucp $USER
+newgrp storage
+```
+
+## Source
+
+- [Udiskie GitHub](https://github.com/coldfix/udiskie)
+- [Arch Wiki - Udisks](https://wiki.archlinux.org/title/Udisks)
+- [Arch Wiki - Removable media](https://wiki.archlinux.org/title/Removable_media)

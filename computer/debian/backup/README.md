@@ -1,35 +1,37 @@
 # Off-box backup: borg + encrypted secrets (Debian 13)
 
-LVM snapshots (lvm-snapshots note) + gark_home git snapshots (home-git-snapshot note) not backups — die with disk. This note off-box layer: borg for home + /etc, age for secrets.
+LVM snapshots and gark_home git snapshots die with the disk. This is the off-box layer: borg for home + `/etc`, age for secrets.
 
 ## 1. Target
 
-Pick one, set `BORG_REPO` below (adjust host/path):
+Pick one and set `BORG_REPO`:
 
 ```bash
-# NAS over SSH (recommended; you have rsync/ssh to the NAS already):
-export BORG_REPO='ssh://backup@nas.lan/srv/backup/gark'
-# or a USB disk mounted at /mnt/backup:
-# export BORG_REPO='/mnt/backup/gark.borg'
+export BORG_REPO='ssh://backup@nas.lan/srv/backup/gark'   # NAS over SSH (recommended)
+# export BORG_REPO='/mnt/backup/gark.borg'                # or USB disk
 ```
 
-Init once: `pkexec apt install -y borgbackup age` (age from trixie), then `borg init --encryption=repokey-blake2 "$BORG_REPO"` (passphrase in keyring-backed password manager; repokey keeps key in repo, NAS alone not enough to decrypt).
+```bash
+pkexec apt install -y borgbackup age
+borg init --encryption=repokey-blake2 "$BORG_REPO"
+```
+
+Passphrase in the keyring-backed password manager. `repokey` keeps the key inside the repo, so the NAS alone can decrypt — keep the passphrase out of the NAS.
 
 ## 2. What is backed up
 
-- `/home/galmost` **minus** `Avalon-models` (134G — recover via sha256 manifest in ai/amd/avalon), `node_modules`, `__pycache__`, browser caches, `.cache`. Includes `~/.pi/agent/sessions` (agent session history).
-- `/etc` (system config) — or etckeeper for tracked parts.
-- Secrets, separately, age-encrypted before leaving machine:
+- `/home/galmost` minus `Avalon-models` (134G; restore via sha256 manifest in `ai/amd/avalon`), `node_modules`, `__pycache__`, browser caches, `.cache`. Includes `~/.pi/agent/sessions`.
+- `/etc` — or etckeeper for tracked parts.
+- Secrets separately, age-encrypted before leaving the machine:
 
 ```bash
-age-keygen -o ~/.config/age/key.txt 2>/dev/null || age-keygen -o ~/.config/age/key.txt   # print pubkey once, store it
+age-keygen -o ~/.config/age/key.txt          # pubkey line "# public key: age1..."
 tar czf - ~/.pi/agent/auth.json ~/.ssh/id_ed25519_bitbucket ~/.local/share/keyrings ~/.gnupg ~/.config/gh \
-  | age -r "$(grep '^# created' -B1 ~/.config/age/key.txt >/dev/null; awk '/public key/{print $NF}' ~/.config/age/key.txt 2>/dev/null || age-keygen -y ~/.config/age/key.txt)" \
+  | age -r "$(age-keygen -y ~/.config/age/key.txt)" \
   > "$HOME/.local/share/backups/secrets-$(date +%F).tar.gz.age"
-# copy that file to the NAS; never back up ~/.config/age/key.txt itself to the NAS
 ```
 
-Secrets never in git, never in borg unencrypted.
+Copy that file to the NAS. Never back up `~/.config/age/key.txt` to the NAS. Secrets never in git, never in borg unencrypted.
 
 ## 3. Run + schedule
 
@@ -42,27 +44,30 @@ borg prune -v --list "$BORG_REPO" --keep-daily=7 --keep-weekly=4 --keep-monthly=
 borg compact "$BORG_REPO"
 ```
 
-Automate with systemd user timer like gark-home-snapshot (see home-git-snapshot note): `~/.config/systemd/user/gark-borg.{service,timer}`, `OnCalendar=daily`, `Persistent=true`.
+Automate with `~/.config/systemd/user/gark-borg.{service,timer}` (`OnCalendar=daily`, `Persistent=true`), same shape as [home-git-snapshot](../home-git-snapshot/README.md).
 
-## 4. Restore drill (quarterly — a backup never restored is a rumor)
+## 4. Quarterly restore drill
+
+A backup never restored is a rumor.
 
 ```bash
-borg list "$BORG_REPO"                          # pick an archive
+borg list "$BORG_REPO"
 borg extract --dry-run "$BORG_REPO::gark-2026-11-25_00:00" home/galmost/.zshrc
 mkdir /tmp/restore && cd /tmp/restore && borg extract "$BORG_REPO::gark-2026-11-25_00:00" home/galmost/.zshrc
-# secrets: age -d -i ~/.config/age/key.txt secrets-2026-11-25.tar.gz.age | tar tzf -
+age -d -i ~/.config/age/key.txt secrets-2026-11-25.tar.gz.age | tar tzf -
 ```
 
 ## 5. Full disaster recovery order
 
-1. Reinstall Debian 13 per setup index (computer/debian/README.md).
-2. Restore home from gark_home git (clone gark_home, checkout) — dotfiles.
+1. Reinstall Debian 13 per [setup index](../README.md).
+2. Restore home from git: clone `gark_home`, `git checkout origin/main -- .`.
 3. Restore packages: `dpkg --set-selections < galmost@GArk/packages/dpkg-selections.txt`.
-4. borg extract home + /etc from NAS.
+4. `borg extract` home + `/etc` from the NAS.
 5. age-decrypt secrets back into place.
-6. Re-download models per ai/amd/avalon/models-manifest.sha256.
-7. LVM snapshot NOT in path — only pre-risk undo button.
+6. Re-download models per `ai/amd/avalon/models-manifest.sha256`.
+7. LVM snapshot is not in this path — pre-risk undo button only.
 
 ## Source
 
-- https://borgbackup.readthedocs.io/ , https://age-encryption.org/
+- https://borgbackup.readthedocs.io/
+- https://age-encryption.org/
